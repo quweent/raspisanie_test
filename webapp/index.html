@@ -48,6 +48,11 @@
       color: var(--muted);
       margin-top: 2px;
     }
+    .top-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
     .edit-toggle-btn {
       background: var(--card);
       border: 1px solid var(--border);
@@ -65,6 +70,30 @@
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
+    }
+    .icon-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .icon-btn.reset-btn {
+      color: var(--danger);
+      border-color: rgba(239,68,68,0.3);
+    }
+    .edit-mode .icon-btn {
+      display: flex;
     }
     
     .status-panel {
@@ -298,9 +327,13 @@
       <div class="title">Розклад уроків</div>
       <div class="subtitle">10-Б Клас • Ліцей №1</div>
     </div>
-    <button class="edit-toggle-btn" id="edit-btn" onclick="toggleEditMode()">
-      <span>✏️</span> Редагувати
-    </button>
+    <div class="top-actions">
+      <button class="icon-btn" id="undo-btn" onclick="undoDelete()" title="Скасувати">↩</button>
+      <button class="icon-btn reset-btn" onclick="resetSchedule()" title="Скинути до оригіналу">✕</button>
+      <button class="edit-toggle-btn" id="edit-btn" onclick="toggleEditMode()">
+        <span>✏️</span> Редагувати
+      </button>
+    </div>
   </div>
 
   <div class="status-panel" id="status-panel">
@@ -377,6 +410,7 @@
 
     let schedule = JSON.parse(localStorage.getItem("user_schedule") || "null") || defaultSchedule;
     let isEditMode = false;
+    let undoStack = [];
     const daysRu = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
     let curDayIdx = new Date().getDay();
     let curDayKey = curDayIdx === 0 ? "Вс" : daysRu[curDayIdx - 1];
@@ -386,18 +420,48 @@
       localStorage.setItem("user_schedule", JSON.stringify(schedule));
     }
 
+    function updateUndoBtn() {
+      const btn = document.getElementById("undo-btn");
+      if (btn) btn.disabled = undoStack.length === 0;
+    }
+
     function toggleEditMode() {
       isEditMode = !isEditMode;
       document.body.classList.toggle("edit-mode", isEditMode);
       const btn = document.getElementById("edit-btn");
       btn.classList.toggle("active", isEditMode);
       btn.innerHTML = isEditMode ? "<span>💾</span> Готово" : "<span>✏️</span> Редагувати";
+      updateUndoBtn();
       renderList();
     }
 
     function deleteLesson(idx) {
-      schedule[selectedDay].splice(idx, 1);
+      const removed = schedule[selectedDay].splice(idx, 1)[0];
+      undoStack.push({ day: selectedDay, idx, item: removed });
       saveSchedule();
+      updateUndoBtn();
+      renderList();
+      updateStatus();
+    }
+
+    function undoDelete() {
+      if (undoStack.length === 0) return;
+      const last = undoStack.pop();
+      if (!schedule[last.day]) schedule[last.day] = [];
+      schedule[last.day].splice(last.idx, 0, last.item);
+      saveSchedule();
+      if (selectedDay !== last.day) switchDay(last.day);
+      updateUndoBtn();
+      renderList();
+      updateStatus();
+    }
+
+    function resetSchedule() {
+      if (!confirm("Скинути всі зміни до оригіналу?")) return;
+      localStorage.removeItem("user_schedule");
+      schedule = JSON.parse(JSON.stringify(defaultSchedule));
+      undoStack = [];
+      updateUndoBtn();
       renderList();
       updateStatus();
     }

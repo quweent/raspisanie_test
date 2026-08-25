@@ -603,26 +603,36 @@
       }
     }
 
-    async function loadRemoteSchedule() {
-      try {
-        const res = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && typeof data === "object") {
-            schedule = data;
-            localStorage.setItem("user_schedule", JSON.stringify(schedule));
-            renderList();
-            updateStatus();
-          }
-        }
-      } catch (e) {}
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
     const isAdmin = urlParams.get("admin") === "1";
     if (!isAdmin) {
       const topActions = document.querySelector(".top-actions");
       if (topActions) topActions.style.display = "none";
+      try { localStorage.removeItem("user_schedule"); } catch (e) {}
+    }
+
+    async function loadRemoteSchedule() {
+      const urls = [
+        "schedule.json?t=" + Date.now(),
+        "https://raw.githubusercontent.com/quweent/raspisanie_test/main/schedule.json?t=" + Date.now()
+      ];
+      for (const u of urls) {
+        try {
+          const res = await fetch(u, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && typeof data === "object") {
+              schedule = data;
+              if (isAdmin) {
+                try { localStorage.setItem("user_schedule", JSON.stringify(schedule)); } catch (e) {}
+              }
+              renderList();
+              updateStatus();
+              break;
+            }
+          }
+        } catch (e) {}
+      }
     }
 
     switchDay(selectedDay);

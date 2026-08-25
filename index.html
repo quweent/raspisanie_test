@@ -429,9 +429,6 @@
 
     function saveSchedule() {
       localStorage.setItem("user_schedule", JSON.stringify(schedule));
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.sendData(JSON.stringify({ type: "update_schedule", data: schedule }));
-      }
     }
 
     function updateUndoBtn() {
@@ -478,6 +475,7 @@
       updateUndoBtn();
       renderList();
       updateStatus();
+      loadRemoteSchedule();
     }
 
     function addLesson() {
@@ -589,7 +587,8 @@
 
     function syncToBot() {
       const tg = window.Telegram ? window.Telegram.WebApp : null;
-      if (!tg) {
+      localStorage.setItem("user_schedule", JSON.stringify(schedule));
+      if (!tg || !tg.sendData) {
         alert("Помилка: Telegram WebApp SDK не знайдено.");
         return;
       }
@@ -597,13 +596,26 @@
         action: "save_schedule",
         schedule: schedule
       };
-      const jsonStr = JSON.stringify(payload);
       try {
-        tg.sendData(jsonStr);
-        tg.close();
+        tg.sendData(JSON.stringify(payload));
       } catch (err) {
-        alert("Помилка відправки в Telegram: " + err);
+        alert("Помилка: відкрийте Web App через нижню кнопку чату '📱 Відкрити Web App', щоб зберегти розклад у бот.");
       }
+    }
+
+    async function loadRemoteSchedule() {
+      try {
+        const res = await fetch("schedule.json?t=" + Date.now(), { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === "object") {
+            schedule = data;
+            localStorage.setItem("user_schedule", JSON.stringify(schedule));
+            renderList();
+            updateStatus();
+          }
+        }
+      } catch (e) {}
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -615,6 +627,7 @@
 
     switchDay(selectedDay);
     updateStatus();
+    loadRemoteSchedule();
 
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();

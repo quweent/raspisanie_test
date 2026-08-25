@@ -283,6 +283,16 @@
       font-weight: 600;
       cursor: pointer;
     }
+    .btn-sync {
+      background: rgba(34,197,94,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(34,197,94,0.3);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
     .empty-state {
       padding: 24px;
@@ -361,6 +371,7 @@
     </div>
     <input type="text" id="new-teacher" placeholder="Вчитель (необов'язково)">
     <button class="btn-add" onclick="addLesson()">+ Додати урок</button>
+    <button class="btn-sync" onclick="syncToBot()">💾 Зберегти в бот</button>
   </div>
 
   <div class="section-title">⏰ Розклад дзвінків</div>
@@ -418,6 +429,9 @@
 
     function saveSchedule() {
       localStorage.setItem("user_schedule", JSON.stringify(schedule));
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.sendData(JSON.stringify({ type: "update_schedule", data: schedule }));
+      }
     }
 
     function updateUndoBtn() {
@@ -571,6 +585,18 @@
       title.textContent = "Завершено";
       desc.textContent = "Всі уроки закінчились";
       timer.textContent = "";
+    }
+
+    function syncToBot() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const payload = {
+          action: "save_schedule",
+          schedule: schedule
+        };
+        window.Telegram.WebApp.sendData(JSON.stringify(payload));
+      } else {
+        alert("Відкрийте через Telegram для збереження в бота");
+      }
     }
 
     switchDay(selectedDay);

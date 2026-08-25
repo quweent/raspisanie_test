@@ -606,6 +606,13 @@
       }
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get("admin") === "1";
+    if (!isAdmin) {
+      const topActions = document.querySelector(".top-actions");
+      if (topActions) topActions.style.display = "none";
+    }
+
     switchDay(selectedDay);
     updateStatus();
 

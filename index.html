@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Расписание уроков</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #18191d;
+      --card-bg: #22252c;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: #333842;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; -webkit-tap-highlight-color: transparent; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    h1 { font-size: 20px; font-weight: 700; }
+    .status-badge { background: rgba(59, 130, 246, 0.15); color: var(--primary); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: 1px solid rgba(59, 130, 246, 0.3); }
+    
+    .days-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; scrollbar-width: none; }
+    .days-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .schedule-list { display: flex; flex-direction: column; gap: 10px; }
+    .lesson-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: transform 0.15s; }
+    .lesson-card.ongoing { border-color: var(--accent); background: rgba(16, 185, 129, 0.08); }
+    .lesson-time { font-family: ui-monospace, monospace; font-size: 13px; font-weight: 700; color: var(--primary); min-width: 50px; }
+    .lesson-info { flex: 1; }
+    .lesson-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .lesson-teacher { font-size: 13px; color: var(--text-muted); }
+    .lesson-badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+    .ongoing .lesson-badge { background: var(--accent); color: #fff; }
+
+    .bells-section { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .bells-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
+    .bell-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; color: var(--text-muted); }
+    .bell-row span:first-child { font-family: monospace; color: var(--text); }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Расписание</h1>
+      <p style="font-size: 13px; color: var(--text-muted);">Лицей №1</p>
+    </div>
+    <div class="status-badge" id="current-day-label">Сегодня: Вт</div>
+  </header>
+
+  <div class="days-tabs">
+    <button class="tab-btn" onclick="showDay('Пн')">Пн</button>
+    <button class="tab-btn active" onclick="showDay('Вт')">Вт</button>
+    <button class="tab-btn" onclick="showDay('Ср')">Ср</button>
+    <button class="tab-btn" onclick="showDay('Чт')">Чт</button>
+    <button class="tab-btn" onclick="showDay('Пт')">Пт</button>
+  </div>
+
+  <div class="schedule-list" id="schedule-container"></div>
+
+  <div class="bells-section">
+    <div class="bells-title">Звонки и перемены</div>
+    <div class="bell-row"><span>08:30 – 09:15</span> <span>перемена 10 мин</span></div>
+    <div class="bell-row"><span>09:25 – 10:10</span> <span>перемена 20 мин</span></div>
+    <div class="bell-row"><span>10:30 – 11:15</span> <span>перемена 20 мин</span></div>
+    <div class="bell-row"><span>11:35 – 12:20</span> <span>перемена 10 мин</span></div>
+    <div class="bell-row"><span>12:30 – 13:15</span> <span>перемена 10 мин</span></div>
+    <div class="bell-row"><span>13:25 – 14:10</span> <span>перемена 5 мин</span></div>
+    <div class="bell-row"><span>14:15 – 15:00</span> <span>конец уроков</span></div>
+  </div>
+
+  <script>
+    const scheduleData = {
+      "Пн": [
+        { time: "10:30", name: "Українська мова", teacher: "Вовк Ольга" },
+        { time: "11:35", name: "Фізика", teacher: "Ракітченко Людмила" }
+      ],
+      "Вт": [
+        { time: "10:30", name: "Фізика", teacher: "Ракітченко Людмила" },
+        { time: "10:30", name: "Українська мова", teacher: "Вовк Ольга" },
+        { time: "11:35", name: "Алгебра", teacher: "Коломійчук Валентина" },
+        { time: "12:30", name: "Англійська мова", teacher: "Імбер Валентина" }
+      ],
+      "Ср": [
+        { time: "08:30", name: "Алгебра", teacher: "Коломійчук Валентина" },
+        { time: "09:25", name: "Англійська мова", teacher: "Імбер Валентина" },
+        { time: "11:35", name: "Українська література", teacher: "Вовк Ольга" }
+      ],
+      "Чт": [
+        { time: "08:30", name: "Англійська мова", teacher: "Імбер Валентина" },
+        { time: "10:30", name: "Правознавство", teacher: "Пилипчак Ігор" },
+        { time: "11:35", name: "Зарубіжна література", teacher: "Андронік Лариса" },
+        { time: "12:30", name: "Геометрія", teacher: "Коломійчук Валентина" },
+        { time: "13:25", name: "Громадянська освіта", teacher: "Пилипчак Ігор" },
+        { time: "14:15", name: "Математика (факультатив)", teacher: "Коломійчук Валентина" }
+      ],
+      "Пт": [
+        { time: "09:25", name: "Біологія та екологія", teacher: "Кирнасівська Вікторія" },
+        { time: "10:30", name: "Українська література", teacher: "Вовк Ольга" },
+        { time: "11:35", name: "Фізика", teacher: "Ракітченко Людмила" },
+        { time: "12:30", name: "Історія України", teacher: "Рудацька Тетяна" },
+        { time: "13:25", name: "Інформатика", teacher: "Купченко Надія" }
+      ]
+    };
+
+    function showDay(day) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent === day));
+      const list = scheduleData[day] || [];
+      const container = document.getElementById('schedule-container');
+      if (list.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">Уроков нет</p>';
+        return;
+      }
+      container.innerHTML = list.map((l, i) => `
+        <div class="lesson-card">
+          <div class="lesson-time">${l.time}</div>
+          <div class="lesson-info">
+            <div class="lesson-name">${l.name}</div>
+            <div class="lesson-teacher">${l.teacher}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    showDay('Вт');
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+  </script>
+</body>
+</html>

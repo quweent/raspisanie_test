@@ -1,250 +1,348 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Розклад уроків</title>
+  <title>Розклад • 10-Б</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
-      --card-bg: rgba(33, 38, 45, 0.7);
-      --card-active-bg: rgba(56, 139, 253, 0.12);
-      --primary: #58a6ff;
-      --primary-gradient: linear-gradient(135deg, #388bfd 0%, #1f6feb 100%);
-      --accent: #3fb950;
-      --accent-gradient: linear-gradient(135deg, #2ea043 0%, #238636 100%);
-      --text: #f0f6fc;
-      --text-muted: #8b949e;
-      --border: rgba(240, 246, 252, 0.1);
-      --border-active: rgba(56, 139, 253, 0.4);
-      --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body {
-      background: #0d1117;
-      background-image: var(--bg-gradient);
-      color: var(--text);
-      padding: 16px 14px 28px 14px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
+    }
+    :root {
+      --bg: #090a0f;
+      --card: #12141c;
+      --border: #1e2230;
+      --text: #f3f4f6;
+      --muted: #848a9e;
+      --accent: #22c55e;
+      --accent-bg: rgba(34, 197, 94, 0.1);
+      --primary: #3b82f6;
+      --primary-bg: rgba(59, 130, 246, 0.1);
+      --danger: #ef4444;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      padding-bottom: 40px;
       min-height: 100vh;
     }
-    
-    .header-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px 18px;
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
+      margin-bottom: 18px;
     }
-    .header-title { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; }
-    .header-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-    .status-badge {
-      background: var(--primary-gradient);
-      color: #fff;
-      font-size: 12px;
+    .title {
+      font-size: 20px;
       font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 9999px;
-      box-shadow: 0 2px 10px rgba(56, 139, 253, 0.3);
+      letter-spacing: -0.4px;
     }
-
-    .live-card {
-      background: linear-gradient(135deg, rgba(63, 185, 80, 0.15) 0%, rgba(35, 134, 54, 0.05) 100%);
-      border: 1px solid rgba(63, 185, 80, 0.3);
-      border-radius: 16px;
-      padding: 12px 16px;
-      margin-bottom: 14px;
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .edit-toggle-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      gap: 6px;
     }
-    .live-title { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; }
-    .live-val { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 2px; }
-    .live-time { font-family: ui-monospace, monospace; font-size: 13px; font-weight: 700; color: var(--accent); }
-
-    .days-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
+    .edit-toggle-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    
+    .status-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
       margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-panel.active {
+      border-color: rgba(34, 197, 94, 0.4);
+      background: var(--accent-bg);
+    }
+    .status-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+    .status-panel.active .status-title {
+      color: var(--accent);
+    }
+    .status-val {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .status-timer {
+      font-size: 13px;
+      font-family: ui-monospace, monospace;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .status-panel.active .status-timer {
+      color: var(--accent);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      overflow-x: auto;
       scrollbar-width: none;
     }
-    .days-tabs::-webkit-scrollbar { display: none; }
-    .tab-btn {
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
       flex: 1;
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 10px 0;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
+      padding: 8px 0;
       text-align: center;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
     }
-    .tab-btn:active { transform: scale(0.96); }
-    .tab-btn.active {
-      background: var(--accent-gradient);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 4px 14px rgba(46, 160, 67, 0.35);
+    .tab.active {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
     }
 
-    .schedule-list { display: flex; flex-direction: column; gap: 10px; }
-    .lesson-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+    .lessons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lesson-item {
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 16px;
+      border-radius: 10px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: all 0.2s;
+      gap: 12px;
+      position: relative;
     }
-    .lesson-card.ongoing {
+    .lesson-item.current {
       border-color: var(--accent);
-      background: var(--card-active-bg);
-      box-shadow: 0 0 16px rgba(63, 185, 80, 0.15);
+      background: var(--accent-bg);
     }
     .lesson-idx {
       font-size: 12px;
-      font-weight: 800;
-      color: var(--text-muted);
-      width: 16px;
+      font-weight: 700;
+      color: var(--muted);
+      width: 14px;
       text-align: center;
-    }
-    .lesson-time-box {
-      background: rgba(88, 166, 255, 0.1);
-      border: 1px solid rgba(88, 166, 255, 0.2);
-      padding: 6px 8px;
-      border-radius: 10px;
-      text-align: center;
-      min-width: 54px;
-    }
-    .lesson-card.ongoing .lesson-time-box {
-      background: rgba(63, 185, 80, 0.15);
-      border-color: rgba(63, 185, 80, 0.3);
     }
     .lesson-time {
       font-family: ui-monospace, monospace;
       font-size: 12px;
-      font-weight: 800;
-      color: var(--primary);
+      font-weight: 600;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
     }
-    .lesson-card.ongoing .lesson-time { color: var(--accent); }
-    .lesson-info { flex: 1; min-width: 0; }
+    .lesson-item.current .lesson-time {
+      color: var(--accent);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .lesson-main {
+      flex: 1;
+      min-width: 0;
+    }
     .lesson-name {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 2px;
+      font-size: 14px;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .lesson-teacher {
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--muted);
+      margin-top: 1px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .ongoing-badge {
-      font-size: 10px;
-      font-weight: 800;
-      background: var(--accent);
-      color: #fff;
-      padding: 2px 7px;
+    
+    .del-btn {
+      display: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+      width: 28px;
+      height: 28px;
       border-radius: 6px;
-      text-transform: uppercase;
+      font-size: 14px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .edit-mode .del-btn {
+      display: flex;
     }
 
-    .bells-card {
-      margin-top: 20px;
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: var(--shadow);
+    .add-block {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      flex-direction: column;
+      gap: 8px;
     }
-    .bells-header {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--primary);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-      letter-spacing: 0.6px;
+    .edit-mode .add-block {
       display: flex;
-      align-items: center;
-      gap: 6px;
     }
-    .bell-item {
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      flex: 1;
+    }
+    input:focus {
+      border-color: var(--primary);
+    }
+    .time-input {
+      width: 80px;
+      flex: none;
+    }
+    .btn-add {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .empty-state {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 22px 0 10px 2px;
+    }
+    .bells-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .bell-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 14px;
       font-size: 13px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(240, 246, 252, 0.05);
+      border-bottom: 1px solid var(--border);
     }
-    .bell-item:last-child { border-bottom: none; }
-    .bell-time { font-family: ui-monospace, monospace; font-weight: 700; color: var(--text); }
-    .bell-break { font-size: 12px; color: var(--text-muted); }
+    .bell-row:last-child { border-bottom: none; }
+    .bell-time { font-family: ui-monospace, monospace; font-weight: 600; }
+    .bell-break { color: var(--muted); font-size: 12px; }
   </style>
 </head>
 <body>
-  <div class="header-card">
+  <div class="top-bar">
     <div>
-      <div class="header-title">Розклад уроків</div>
-      <div class="header-sub">10-Б Клас • Ліцей №1</div>
+      <div class="title">Розклад уроків</div>
+      <div class="subtitle">10-Б Клас • Ліцей №1</div>
     </div>
-    <div class="status-badge" id="current-day-label">Вівторок</div>
+    <button class="edit-toggle-btn" id="edit-btn" onclick="toggleEditMode()">
+      <span>✏️</span> Редагувати
+    </button>
   </div>
 
-  <div class="live-card" id="live-card">
+  <div class="status-panel" id="status-panel">
     <div>
-      <div class="live-title" id="live-status-title">Стан розкладу</div>
-      <div class="live-val" id="live-status-desc">Завантаження...</div>
+      <div class="status-title" id="st-title">Розклад</div>
+      <div class="status-val" id="st-desc">Завантаження...</div>
     </div>
-    <div class="live-time" id="live-status-time"></div>
+    <div class="status-timer" id="st-timer"></div>
   </div>
 
-  <div class="days-tabs">
-    <button class="tab-btn" onclick="showDay('Пн')">Пн</button>
-    <button class="tab-btn" onclick="showDay('Вт')">Вт</button>
-    <button class="tab-btn" onclick="showDay('Ср')">Ср</button>
-    <button class="tab-btn" onclick="showDay('Чт')">Чт</button>
-    <button class="tab-btn" onclick="showDay('Пт')">Пт</button>
+  <div class="tabs">
+    <button class="tab" onclick="switchDay('Пн')">Пн</button>
+    <button class="tab" onclick="switchDay('Вт')">Вт</button>
+    <button class="tab" onclick="switchDay('Ср')">Ср</button>
+    <button class="tab" onclick="switchDay('Чт')">Чт</button>
+    <button class="tab" onclick="switchDay('Пт')">Пт</button>
   </div>
 
-  <div class="schedule-list" id="schedule-container"></div>
+  <div class="lessons-list" id="lessons-list"></div>
 
-  <div class="bells-card">
-    <div class="bells-header">⏰ Дзвінки та перерви</div>
-    <div class="bell-item"><span class="bell-time">08:30 – 09:15</span> <span class="bell-break">перерва 10 хв</span></div>
-    <div class="bell-item"><span class="bell-time">09:25 – 10:10</span> <span class="bell-break">перерва 20 хв</span></div>
-    <div class="bell-item"><span class="bell-time">10:30 – 11:15</span> <span class="bell-break">перерва 20 хв</span></div>
-    <div class="bell-item"><span class="bell-time">11:35 – 12:20</span> <span class="bell-break">перерва 10 хв</span></div>
-    <div class="bell-item"><span class="bell-time">12:30 – 13:15</span> <span class="bell-break">перерва 10 хв</span></div>
-    <div class="bell-item"><span class="bell-time">13:25 – 14:10</span> <span class="bell-break">перерва 5 хв</span></div>
-    <div class="bell-item"><span class="bell-time">14:15 – 15:00</span> <span class="bell-break">кінець уроків</span></div>
+  <div class="add-block" id="add-block">
+    <div class="input-row">
+      <input type="text" id="new-time" class="time-input" placeholder="08:30" maxlength="5">
+      <input type="text" id="new-name" placeholder="Назва уроку">
+    </div>
+    <input type="text" id="new-teacher" placeholder="Вчитель (необов'язково)">
+    <button class="btn-add" onclick="addLesson()">+ Додати урок</button>
+  </div>
+
+  <div class="section-title">⏰ Розклад дзвінків</div>
+  <div class="bells-box">
+    <div class="bell-row"><span class="bell-time">08:30 – 09:15</span><span class="bell-break">перерва 10 хв</span></div>
+    <div class="bell-row"><span class="bell-time">09:25 – 10:10</span><span class="bell-break">перерва 20 хв</span></div>
+    <div class="bell-row"><span class="bell-time">10:30 – 11:15</span><span class="bell-break">перерва 20 хв</span></div>
+    <div class="bell-row"><span class="bell-time">11:35 – 12:20</span><span class="bell-break">перерва 10 хв</span></div>
+    <div class="bell-row"><span class="bell-time">12:30 – 13:15</span><span class="bell-break">перерва 10 хв</span></div>
+    <div class="bell-row"><span class="bell-time">13:25 – 14:10</span><span class="bell-break">перерва 5 хв</span></div>
+    <div class="bell-row"><span class="bell-time">14:15 – 15:00</span><span class="bell-break">кінець уроків</span></div>
   </div>
 
   <script>
-    const scheduleData = {
+    const defaultSchedule = {
       "Пн": [
         { time: "10:30", name: "Українська мова", teacher: "Вовк Ольга" },
         { time: "11:35", name: "Фізика", teacher: "Ракітченко Людмила" }
@@ -277,103 +375,142 @@
       ]
     };
 
+    let schedule = JSON.parse(localStorage.getItem("user_schedule") || "null") || defaultSchedule;
+    let isEditMode = false;
     const daysRu = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-    const daysUaFull = { "Пн": "Понеділок", "Вт": "Вівторок", "Ср": "Середа", "Чт": "Четвер", "Пт": "Пʼятниця", "Сб": "Субота", "Вс": "Неділя" };
-    const curDayIdx = new Date().getDay();
-    const curDayKey = curDayIdx === 0 ? "Вс" : daysRu[curDayIdx - 1];
+    let curDayIdx = new Date().getDay();
+    let curDayKey = curDayIdx === 0 ? "Вс" : daysRu[curDayIdx - 1];
+    let selectedDay = ["Пн", "Вт", "Ср", "Чт", "Пт"].includes(curDayKey) ? curDayKey : "Пн";
 
-    function updateLiveStatus() {
-      const now = new Date();
-      const curMins = now.getHours() * 60 + now.getMinutes();
-      const todayList = scheduleData[curDayKey] || [];
-      const titleEl = document.getElementById('live-status-title');
-      const descEl = document.getElementById('live-status-desc');
-      const timeEl = document.getElementById('live-status-time');
-
-      if (todayList.length === 0) {
-        titleEl.textContent = "Сьогодні вихідний";
-        descEl.textContent = "Уроків немає 🎉";
-        timeEl.textContent = "";
-        return;
-      }
-
-      let parsed = todayList.map(l => {
-        const [h, m] = l.time.split(':').map(Number);
-        const start = h * 60 + m;
-        return { ...l, start, end: start + 45 };
-      }).sort((a, b) => a.start - b.start);
-
-      let ongoing = parsed.find(l => curMins >= l.start && curMins <= l.end);
-      if (ongoing) {
-        titleEl.textContent = "Зараз йде урок";
-        descEl.textContent = ongoing.name;
-        timeEl.textContent = `залишилось ${ongoing.end - curMins} хв`;
-        return;
-      }
-
-      let next = parsed.find(l => l.start > curMins);
-      if (next) {
-        titleEl.textContent = curMins < parsed[0].start ? "До початку уроків" : "Зараз перерва";
-        descEl.textContent = `Наступний: ${next.name}`;
-        timeEl.textContent = `через ${next.start - curMins} хв`;
-        return;
-      }
-
-      titleEl.textContent = "Уроки завершено";
-      descEl.textContent = "Всі уроки на сьогодні закінчились";
-      timeEl.textContent = "🎉";
+    function saveSchedule() {
+      localStorage.setItem("user_schedule", JSON.stringify(schedule));
     }
 
-    function showDay(day) {
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.toggle('active', b.textContent === day);
-      });
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      document.body.classList.toggle("edit-mode", isEditMode);
+      const btn = document.getElementById("edit-btn");
+      btn.classList.toggle("active", isEditMode);
+      btn.innerHTML = isEditMode ? "<span>💾</span> Готово" : "<span>✏️</span> Редагувати";
+      renderList();
+    }
 
-      const list = scheduleData[day] || [];
-      const container = document.getElementById('schedule-container');
+    function deleteLesson(idx) {
+      schedule[selectedDay].splice(idx, 1);
+      saveSchedule();
+      renderList();
+      updateStatus();
+    }
+
+    function addLesson() {
+      const time = document.getElementById("new-time").value.trim();
+      const name = document.getElementById("new-name").value.trim();
+      const teacher = document.getElementById("new-teacher").value.trim();
+      if (!time || !name) {
+        alert("Вкажіть час та назву уроку");
+        return;
+      }
+      if (!schedule[selectedDay]) schedule[selectedDay] = [];
+      schedule[selectedDay].push({ time, name, teacher });
+      schedule[selectedDay].sort((a, b) => a.time.localeCompare(b.time));
+      saveSchedule();
+      document.getElementById("new-time").value = "";
+      document.getElementById("new-name").value = "";
+      document.getElementById("new-teacher").value = "";
+      renderList();
+      updateStatus();
+    }
+
+    function switchDay(d) {
+      selectedDay = d;
+      document.querySelectorAll(".tab").forEach(b => {
+        b.classList.toggle("active", b.textContent === d);
+      });
+      renderList();
+    }
+
+    function renderList() {
+      const list = schedule[selectedDay] || [];
+      const container = document.getElementById("lessons-list");
       const now = new Date();
       const curMins = now.getHours() * 60 + now.getMinutes();
-      const isToday = (day === curDayKey);
+      const isToday = (selectedDay === curDayKey);
 
       if (list.length === 0) {
-        container.innerHTML = '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center;color:var(--text-muted);font-weight:600;">Уроків немає 🎉</div>';
+        container.innerHTML = '<div class="empty-state">Уроків немає</div>';
         return;
       }
 
       let regIdx = 1;
-      container.innerHTML = list.map((l) => {
-        const [h, m] = l.time.split(':').map(Number);
+      container.innerHTML = list.map((l, idx) => {
+        const [h, m] = l.time.split(":").map(Number);
         const start = h * 60 + m;
         const end = start + 45;
-        const isOngoing = isToday && (curMins >= start && curMins <= end);
-        
-        let numLabel = regIdx;
-        if (start < 8 * 60 + 30) {
-          numLabel = 0;
-        } else {
-          regIdx++;
-        }
+        const isCur = isToday && (curMins >= start && curMins <= end);
+        let numLabel = start < 8 * 60 + 30 ? 0 : regIdx++;
 
         return `
-          <div class="lesson-card ${isOngoing ? 'ongoing' : ''}">
+          <div class="lesson-item ${isCur ? 'current' : ''}">
             <div class="lesson-idx">${numLabel}</div>
-            <div class="lesson-time-box">
-              <div class="lesson-time">${l.time}</div>
-            </div>
-            <div class="lesson-info">
+            <div class="lesson-time">${l.time}</div>
+            <div class="lesson-main">
               <div class="lesson-name">${l.name}</div>
-              <div class="lesson-teacher">${l.teacher}</div>
+              ${l.teacher ? `<div class="lesson-teacher">${l.teacher}</div>` : ''}
             </div>
-            ${isOngoing ? '<span class="ongoing-badge">Зараз</span>' : ''}
+            <button class="del-btn" onclick="deleteLesson(${idx})">✕</button>
           </div>
         `;
-      }).join('');
+      }).join("");
     }
 
-    const initialDay = ["Пн", "Вт", "Ср", "Чт", "Пт"].includes(curDayKey) ? curDayKey : "Пн";
-    document.getElementById('current-day-label').textContent = daysUaFull[curDayKey] || curDayKey;
-    showDay(initialDay);
-    updateLiveStatus();
+    function updateStatus() {
+      const now = new Date();
+      const curMins = now.getHours() * 60 + now.getMinutes();
+      const todayList = schedule[curDayKey] || [];
+      const panel = document.getElementById("status-panel");
+      const title = document.getElementById("st-title");
+      const desc = document.getElementById("st-desc");
+      const timer = document.getElementById("st-timer");
+
+      if (todayList.length === 0) {
+        panel.classList.remove("active");
+        title.textContent = "Сьогодні";
+        desc.textContent = "Вихідний день";
+        timer.textContent = "";
+        return;
+      }
+
+      const parsed = todayList.map(l => {
+        const [h, m] = l.time.split(":").map(Number);
+        const start = h * 60 + m;
+        return { ...l, start, end: start + 45 };
+      }).sort((a, b) => a.start - b.start);
+
+      const ongoing = parsed.find(l => curMins >= l.start && curMins <= l.end);
+      if (ongoing) {
+        panel.classList.add("active");
+        title.textContent = "Зараз йде урок";
+        desc.textContent = ongoing.name;
+        timer.textContent = `${ongoing.end - curMins} хв`;
+        return;
+      }
+
+      panel.classList.remove("active");
+      const next = parsed.find(l => l.start > curMins);
+      if (next) {
+        title.textContent = curMins < parsed[0].start ? "До початку" : "Перерва";
+        desc.textContent = next.name;
+        timer.textContent = `через ${next.start - curMins} хв`;
+        return;
+      }
+
+      title.textContent = "Завершено";
+      desc.textContent = "Всі уроки закінчились";
+      timer.textContent = "";
+    }
+
+    switchDay(selectedDay);
+    updateStatus();
 
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();

@@ -468,13 +468,14 @@
     }
 
     function resetSchedule() {
-      if (!confirm("Скинути всі зміни до вбудованого розкладу?")) return;
+      if (!confirm("Скинути всі зміни до оригіналу?")) return;
       localStorage.removeItem("user_schedule");
       schedule = JSON.parse(JSON.stringify(defaultSchedule));
       undoStack = [];
       updateUndoBtn();
       renderList();
       updateStatus();
+      loadRemoteSchedule();
     }
 
     function addLesson() {

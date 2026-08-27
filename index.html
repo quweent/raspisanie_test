@@ -412,6 +412,101 @@
       font-size: 12px;
       cursor: pointer;
     }
+
+    .admin-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .admin-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .btn-action {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.15s;
+    }
+    .btn-action.success {
+      background: var(--accent-bg);
+      border-color: rgba(34,197,94,0.3);
+      color: var(--accent);
+    }
+    .btn-action.primary {
+      background: var(--primary-bg);
+      border-color: rgba(59,130,246,0.3);
+      color: var(--primary);
+    }
+    .btn-action.purple {
+      background: rgba(168,85,247,0.12);
+      border-color: rgba(168,85,247,0.3);
+      color: #c084fc;
+    }
+    .script-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-family: ui-monospace, monospace;
+    }
+    .btn-run {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .cmd-box {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .cmd-box input {
+      flex: 1;
+    }
+    .btn-exec {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-exec.ai {
+      background: #a855f7;
+    }
   </style>
 </head>
 <body>
@@ -443,6 +538,7 @@
     <button class="tab" onclick="switchDay('Ср')">Ср</button>
     <button class="tab" onclick="switchDay('Чт')">Чт</button>
     <button class="tab" onclick="switchDay('Пт')">Пт</button>
+    <button class="tab" id="tab-admin" style="display:none" onclick="switchTab('admin')">⚙️ Пульт ПК</button>
     <button class="tab" id="tab-keys" style="display:none" onclick="switchTab('keys')">🔑 Ключи</button>
   </div>
 
@@ -467,6 +563,54 @@
     <div class="bell-row"><span class="bell-time">12:30 – 13:15</span><span class="bell-break">перерва 10 хв</span></div>
     <div class="bell-row"><span class="bell-time">13:25 – 14:10</span><span class="bell-break">перерва 5 хв</span></div>
     <div class="bell-row"><span class="bell-time">14:15 – 15:00</span><span class="bell-break">кінець уроків</span></div>
+  </div>
+
+  <div id="admin-panel" style="display:none; margin-top: 18px;">
+    <div class="admin-card">
+      <div class="admin-card-title">💻 Мониторинг и управление</div>
+      <div class="admin-grid">
+        <button class="btn-action success" onclick="sendAction({action: 'take_screenshot'})">📸 Скриншот</button>
+        <button class="btn-action primary" onclick="sendAction({action: 'restart_bot'})">🔄 Рестарт бота</button>
+        <button class="btn-action purple" onclick="sendAction({action: 'view_logs'})">📜 Логи бота</button>
+        <button class="btn-action" onclick="sendAction({action: 'sync_github'})">🐙 Синхр. GitHub</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-title">📜 Скрипты автоматизации</div>
+      <div class="script-item">
+        <span>check_marks.py</span>
+        <button class="btn-run" onclick="sendAction({action: 'run_script', script: 'check_marks.py'})">▶ Запуск</button>
+      </div>
+      <div class="script-item">
+        <span>check_portal.py</span>
+        <button class="btn-run" onclick="sendAction({action: 'run_script', script: 'check_portal.py'})">▶ Запуск</button>
+      </div>
+      <div class="script-item">
+        <span>fetch_grades.py</span>
+        <button class="btn-run" onclick="sendAction({action: 'run_script', script: 'fetch_grades.py'})">▶ Запуск</button>
+      </div>
+      <div class="script-item">
+        <span>view_logs.py</span>
+        <button class="btn-run" onclick="sendAction({action: 'run_script', script: 'view_logs.py'})">▶ Запуск</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-title">⚡ Выполнение консольной команды</div>
+      <div class="cmd-box">
+        <input type="text" id="admin-cmd-input" placeholder="dir, tasklist, shutdown, etc...">
+        <button class="btn-exec" onclick="execCmd()">Выполнить</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-title">🤖 Промт для Antigravity AI</div>
+      <div class="cmd-box">
+        <input type="text" id="admin-ai-input" placeholder="Напиши запрос агенту...">
+        <button class="btn-exec ai" onclick="execAi()">Отправить</button>
+      </div>
+    </div>
   </div>
 
   <div id="keys-panel" style="display:none; margin-top: 18px;">
@@ -723,7 +867,9 @@
       if (topActions) topActions.style.display = "none";
       try { localStorage.removeItem("user_schedule"); } catch (e) {}
     } else {
+      const adminBtn = document.getElementById("tab-admin");
       const keysBtn = document.getElementById("tab-keys");
+      if (adminBtn) adminBtn.style.display = "";
       if (keysBtn) keysBtn.style.display = "";
     }
 
@@ -769,27 +915,54 @@
       currentTab = tab;
       document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
       const schedDays = ["Пн","Вт","Ср","Чт","Пт"];
+      const adminPanel = document.getElementById("admin-panel");
       const keysPanel = document.getElementById("keys-panel");
       const lessonsList = document.getElementById("lessons-list");
       const addBlock = document.getElementById("add-block");
       const bellsBox = document.querySelector(".bells-box");
       const bellsTitle = document.querySelector(".section-title");
 
-      if (tab === "keys") {
+      if (tab === "admin") {
+        document.getElementById("tab-admin").classList.add("active");
+        if (adminPanel) adminPanel.style.display = "block";
+        if (keysPanel) keysPanel.style.display = "none";
+        lessonsList.style.display = "none";
+        if (addBlock) addBlock.style.display = "none";
+        bellsBox.style.display = "none";
+        bellsTitle.style.display = "none";
+      } else if (tab === "keys") {
         document.getElementById("tab-keys").classList.add("active");
-        keysPanel.style.display = "block";
+        if (adminPanel) adminPanel.style.display = "none";
+        if (keysPanel) keysPanel.style.display = "block";
         lessonsList.style.display = "none";
         if (addBlock) addBlock.style.display = "none";
         bellsBox.style.display = "none";
         bellsTitle.style.display = "none";
         loadKeysFromStorage();
       } else {
-        keysPanel.style.display = "none";
+        if (adminPanel) adminPanel.style.display = "none";
+        if (keysPanel) keysPanel.style.display = "none";
         lessonsList.style.display = "flex";
         bellsBox.style.display = "block";
         bellsTitle.style.display = "block";
         switchDay(tab);
       }
+    }
+
+    function execCmd() {
+      const inp = document.getElementById("admin-cmd-input");
+      const cmd = inp.value.trim();
+      if (!cmd) { alert("Введите команду"); return; }
+      const ok = sendAction({ action: "exec_cmd", command: cmd });
+      if (ok) inp.value = "";
+    }
+
+    function execAi() {
+      const inp = document.getElementById("admin-ai-input");
+      const prompt = inp.value.trim();
+      if (!prompt) { alert("Введите запрос"); return; }
+      const ok = sendAction({ action: "exec_ai", prompt: prompt });
+      if (ok) inp.value = "";
     }
 
     function loadKeysFromStorage() {

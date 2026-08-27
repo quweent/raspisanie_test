@@ -329,6 +329,89 @@
     .bell-row:last-child { border-bottom: none; }
     .bell-time { font-family: ui-monospace, monospace; font-weight: 600; }
     .bell-break { color: var(--muted); font-size: 12px; }
+
+    .keys-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .key-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .key-row:last-child { border-bottom: none; }
+    .key-code {
+      font-family: ui-monospace, monospace;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 1px;
+    }
+    .key-del {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .keys-empty { padding: 14px; color: var(--muted); font-size: 13px; text-align: center; }
+    .keys-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .keys-actions input { flex: 1; min-width: 120px; }
+    .btn-key-add {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-key-create {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-key-create.admin {
+      background: #a855f7;
+    }
+    .admin-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .admin-row:last-child { border-bottom: none; }
+    .admin-name { font-weight: 600; }
+    .admin-id { color: var(--muted); font-family: monospace; font-size: 11px; }
+    .admin-revoke {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -360,6 +443,7 @@
     <button class="tab" onclick="switchDay('Ср')">Ср</button>
     <button class="tab" onclick="switchDay('Чт')">Чт</button>
     <button class="tab" onclick="switchDay('Пт')">Пт</button>
+    <button class="tab" id="tab-keys" style="display:none" onclick="switchTab('keys')">🔑 Ключи</button>
   </div>
 
   <div class="lessons-list" id="lessons-list"></div>
@@ -383,6 +467,33 @@
     <div class="bell-row"><span class="bell-time">12:30 – 13:15</span><span class="bell-break">перерва 10 хв</span></div>
     <div class="bell-row"><span class="bell-time">13:25 – 14:10</span><span class="bell-break">перерва 5 хв</span></div>
     <div class="bell-row"><span class="bell-time">14:15 – 15:00</span><span class="bell-break">кінець уроків</span></div>
+  </div>
+
+  <div id="keys-panel" style="display:none; margin-top: 18px;">
+    <div class="section-title">🔑 Коды доступа</div>
+    <div class="keys-box" id="access-codes-box">
+      <div class="keys-empty">Загрузка...</div>
+    </div>
+    <div class="keys-actions">
+      <input type="text" id="new-access-code" placeholder="Новый код (до 20 символов)" maxlength="20">
+      <button class="btn-key-add" onclick="genAccessCode()">🎲 Случайный</button>
+      <button class="btn-key-create" onclick="createCode(false)">➕ Создать</button>
+    </div>
+
+    <div class="section-title" style="margin-top:20px;">👑 Коды администратора</div>
+    <div class="keys-box" id="admin-codes-box">
+      <div class="keys-empty">Загрузка...</div>
+    </div>
+    <div class="keys-actions">
+      <input type="text" id="new-admin-code" placeholder="Новый код (до 20 символов)" maxlength="20">
+      <button class="btn-key-add" onclick="genAdminCode()">🎲 Случайный</button>
+      <button class="btn-key-create admin" onclick="createCode(true)">➕ Создать</button>
+    </div>
+
+    <div class="section-title" style="margin-top:20px;">🛡 Администраторы</div>
+    <div class="keys-box" id="admins-box">
+      <div class="keys-empty">Список загружается через бот</div>
+    </div>
   </div>
 
   <script>
@@ -611,6 +722,9 @@
       const topActions = document.querySelector(".top-actions");
       if (topActions) topActions.style.display = "none";
       try { localStorage.removeItem("user_schedule"); } catch (e) {}
+    } else {
+      const keysBtn = document.getElementById("tab-keys");
+      if (keysBtn) keysBtn.style.display = "";
     }
 
     async function loadRemoteSchedule() {
@@ -646,6 +760,150 @@
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
+    }
+
+    let currentTab = "schedule";
+    let keysData = { access: [], admin: [], admins: [] };
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      const schedDays = ["Пн","Вт","Ср","Чт","Пт"];
+      const keysPanel = document.getElementById("keys-panel");
+      const lessonsList = document.getElementById("lessons-list");
+      const addBlock = document.getElementById("add-block");
+      const bellsBox = document.querySelector(".bells-box");
+      const bellsTitle = document.querySelector(".section-title");
+
+      if (tab === "keys") {
+        document.getElementById("tab-keys").classList.add("active");
+        keysPanel.style.display = "block";
+        lessonsList.style.display = "none";
+        if (addBlock) addBlock.style.display = "none";
+        bellsBox.style.display = "none";
+        bellsTitle.style.display = "none";
+        loadKeysFromStorage();
+      } else {
+        keysPanel.style.display = "none";
+        lessonsList.style.display = "flex";
+        bellsBox.style.display = "block";
+        bellsTitle.style.display = "block";
+        switchDay(tab);
+      }
+    }
+
+    function loadKeysFromStorage() {
+      const stored = localStorage.getItem("keys_data");
+      if (stored) {
+        keysData = JSON.parse(stored);
+        renderKeys();
+      }
+    }
+
+    function renderKeys() {
+      const accessBox = document.getElementById("access-codes-box");
+      const adminBox = document.getElementById("admin-codes-box");
+      const adminsBox = document.getElementById("admins-box");
+
+      if (!keysData.access.length) {
+        accessBox.innerHTML = '<div class="keys-empty">Нет активных кодов</div>';
+      } else {
+        accessBox.innerHTML = keysData.access.map(c => `
+          <div class="key-row">
+            <span class="key-code">${c}</span>
+            <button class="key-del" onclick="deleteCode('${c}', false)">✕ Удалить</button>
+          </div>`).join("");
+      }
+
+      if (!keysData.admin.length) {
+        adminBox.innerHTML = '<div class="keys-empty">Нет активных кодов администратора</div>';
+      } else {
+        adminBox.innerHTML = keysData.admin.map(c => `
+          <div class="key-row" style="border-left: 2px solid #a855f7;">
+            <span class="key-code" style="color:#c084fc">${c}</span>
+            <button class="key-del" onclick="deleteCode('${c}', true)">✕ Удалить</button>
+          </div>`).join("");
+      }
+
+      if (!keysData.admins || !keysData.admins.length) {
+        adminsBox.innerHTML = '<div class="keys-empty">Нет данных — используй кнопку Коды доступа в боте</div>';
+      } else {
+        adminsBox.innerHTML = keysData.admins.map(a => `
+          <div class="admin-row">
+            <div>
+              <div class="admin-name">${a.name || "Без имени"}</div>
+              <div class="admin-id">ID: ${a.user_id}</div>
+            </div>
+            <button class="admin-revoke" onclick="revokeAdmin(${a.user_id})">Отозвать</button>
+          </div>`).join("");
+      }
+    }
+
+    function sendAction(payload) {
+      const tg = window.Telegram ? window.Telegram.WebApp : null;
+      if (!tg || !tg.sendData) {
+        alert("Откройте Web App через кнопку в боте");
+        return false;
+      }
+      tg.sendData(JSON.stringify(payload));
+      return true;
+    }
+
+    function randomCode(len) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let s = "";
+      for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+      return s;
+    }
+
+    function genAccessCode() {
+      document.getElementById("new-access-code").value = randomCode(6);
+    }
+
+    function genAdminCode() {
+      document.getElementById("new-admin-code").value = randomCode(8);
+    }
+
+    function createCode(isAdmin) {
+      const inp = document.getElementById(isAdmin ? "new-admin-code" : "new-access-code");
+      const code = inp.value.trim();
+      if (!code) { alert("Введи код"); return; }
+      if (code.length > 20) { alert("Слишком длинный"); return; }
+      const ok = sendAction({ action: "create_code", code, is_admin: isAdmin });
+      if (ok) {
+        if (isAdmin) {
+          keysData.admin.unshift(code);
+        } else {
+          keysData.access.unshift(code);
+        }
+        localStorage.setItem("keys_data", JSON.stringify(keysData));
+        inp.value = "";
+        renderKeys();
+      }
+    }
+
+    function deleteCode(code, isAdmin) {
+      if (!confirm(`Удалить код ${code}?`)) return;
+      const ok = sendAction({ action: "delete_code", code, is_admin: isAdmin });
+      if (ok) {
+        if (isAdmin) {
+          keysData.admin = keysData.admin.filter(c => c !== code);
+        } else {
+          keysData.access = keysData.access.filter(c => c !== code);
+        }
+        localStorage.setItem("keys_data", JSON.stringify(keysData));
+        renderKeys();
+      }
+    }
+
+    function revokeAdmin(userId) {
+      if (!confirm(`Отозвать права администратора у ID ${userId}?`)) return;
+      const ok = sendAction({ action: "revoke_admin", user_id: userId });
+      if (ok) {
+        keysData.admins = keysData.admins.filter(a => a.user_id !== userId);
+        localStorage.setItem("keys_data", JSON.stringify(keysData));
+        renderKeys();
+      }
     }
   </script>
 </body>

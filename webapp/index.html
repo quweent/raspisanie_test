@@ -599,9 +599,17 @@
     <div class="admin-card">
       <div class="admin-card-title">⚡ Выполнение консольной команды</div>
       <div class="cmd-box">
-        <input type="text" id="admin-cmd-input" placeholder="dir, tasklist, shutdown, etc...">
+        <input type="text" id="admin-cmd-input" placeholder="tasklist, dir, ipconfig, ping...">
         <button class="btn-exec" onclick="execCmd()">Выполнить</button>
       </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+        <button style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--muted); padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;" onclick="document.getElementById('admin-cmd-input').value='tasklist'">tasklist</button>
+        <button style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--muted); padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;" onclick="document.getElementById('admin-cmd-input').value='dir'">dir</button>
+        <button style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--muted); padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;" onclick="document.getElementById('admin-cmd-input').value='ipconfig'">ipconfig</button>
+        <button style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--muted); padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;" onclick="document.getElementById('admin-cmd-input').value='systeminfo'">systeminfo</button>
+        <button style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:var(--danger); padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;" onclick="document.getElementById('admin-cmd-input').value='taskkill /F /IM python.exe'">kill python</button>
+      </div>
+      <div style="font-size:11px; color:var(--muted); margin-top:6px;">💡 Подсказка: префикс /cmd писать не нужно. Введи команду Windows напрямую.</div>
     </div>
 
     <div class="admin-card">

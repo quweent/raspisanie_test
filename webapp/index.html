@@ -473,9 +473,11 @@
       schedule = JSON.parse(JSON.stringify(defaultSchedule));
       undoStack = [];
       updateUndoBtn();
+      if (!schedule[selectedDay] || schedule[selectedDay].length === 0) {
+        switchDay("Пн");
+      }
       renderList();
       updateStatus();
-      loadRemoteSchedule();
     }
 
     function addLesson() {
@@ -622,6 +624,9 @@
           if (res.ok) {
             const data = await res.json();
             if (data && typeof data === "object") {
+              if (isEditMode) {
+                break;
+              }
               schedule = data;
               if (isAdmin) {
                 try { localStorage.setItem("user_schedule", JSON.stringify(schedule)); } catch (e) {}
@@ -637,7 +642,6 @@
 
     switchDay(selectedDay);
     updateStatus();
-    loadRemoteSchedule();
 
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();

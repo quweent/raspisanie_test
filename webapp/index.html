@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Розклад • 11-Б</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -10,694 +10,610 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     :root {
-      --bg: #0b0d14;
-      --card: rgba(18, 22, 34, 0.72);
-      --card-solid: #121622;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(99, 102, 241, 0.4);
-      --text: #f9fafb;
-      --muted: #94a3b8;
-      --accent: #10b981;
-      --accent-bg: rgba(16, 185, 129, 0.12);
-      --primary: #6366f1;
-      --primary-bg: rgba(99, 102, 241, 0.12);
+      --bg: #07090e;
+      --surface: #0f121a;
+      --surface-subtle: #141824;
+      --surface-border: #1e2436;
+      --border-highlight: #2c344e;
+      --text-main: #f8fafc;
+      --text-muted: #8b95a8;
+      --brand: #5e6ad2;
+      --brand-glow: rgba(94, 106, 210, 0.25);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.2);
       --danger: #f43f5e;
-      --glass-blur: blur(14px);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
     }
     body {
-      background: radial-gradient(circle at 10% 15%, #181c2e 0%, #0b0d14 70%);
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(94, 106, 210, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
       background-attachment: fixed;
-      color: var(--text);
+      color: var(--text-main);
       padding: 16px;
-      padding-bottom: 40px;
+      padding-bottom: 92px;
       min-height: 100vh;
     }
-    .top-bar {
+
+    .header-bento {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
-    .title {
-      font-size: 21px;
-      font-weight: 800;
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .subtitle {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-    .top-actions {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .edit-toggle-btn {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 7px 13px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .edit-toggle-btn.active {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
       color: #fff;
-      border-color: rgba(99, 102, 241, 0.6);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
     }
-    .icon-btn {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      font-size: 15px;
-      cursor: pointer;
-      display: none;
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-icon {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .icon-btn:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-    .icon-btn.reset-btn {
-      color: var(--danger);
-      border-color: rgba(244, 63, 94, 0.3);
-    }
-    .edit-mode .icon-btn {
-      display: flex;
-    }
-    
-    .status-panel {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
-    .status-panel.active {
-      border-color: rgba(16, 185, 129, 0.4);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(18, 22, 34, 0.72) 100%);
-    }
-    .status-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-    }
-    .status-panel.active .status-title {
-      color: var(--accent);
-    }
-    .status-val {
-      font-size: 15px;
-      font-weight: 700;
-      margin-top: 3px;
-    }
-    .status-timer {
-      font-size: 13px;
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-weight: 700;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 4px 8px;
-      border-radius: 7px;
-      border: 1px solid var(--border);
-    }
-    .status-panel.active .status-timer {
-      color: var(--accent);
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab {
-      flex: 1;
-      padding: 10px 0;
-      text-align: center;
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 14px;
+      transition: all 0.15s ease;
     }
-    .tab.active {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff;
-      border-color: rgba(16, 185, 129, 0.6);
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    .btn-icon:hover {
+      border-color: var(--border-highlight);
+      color: var(--text-main);
     }
-    .tab#tab-admin {
-      border-color: rgba(99, 102, 241, 0.35);
-      color: #818cf8;
-      background: rgba(99, 102, 241, 0.08);
-      flex: 1.3;
+    .btn-edit-toggle {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      padding: 0 12px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
-    .tab#tab-admin.active {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #ffffff;
-      border-color: rgba(99, 102, 241, 0.8);
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-    }
-    .tab#tab-keys {
-      border-color: rgba(168, 85, 247, 0.35);
-      color: #c084fc;
-      background: rgba(168, 85, 247, 0.08);
-      flex: 1.1;
-    }
-    .tab#tab-keys.active {
-      background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
-      color: #ffffff;
-      border-color: rgba(168, 85, 247, 0.8);
-      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+    .btn-edit-toggle.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+      box-shadow: 0 0 16px var(--brand-glow);
     }
 
-    .lessons-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .lesson-item {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 13px 15px;
-      display: flex;
+    .bento-status-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
       align-items: center;
       gap: 12px;
       position: relative;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      transition: all 0.2s ease;
+      overflow: hidden;
     }
-    .lesson-item.current {
-      border-color: rgba(16, 185, 129, 0.5);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(18, 22, 34, 0.8) 100%);
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.18);
+    .bento-status-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
     }
-    .lesson-idx {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--muted);
-      width: 18px;
-      text-align: center;
-    }
-    .lesson-time {
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-size: 12px;
+    .bento-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
       font-weight: 700;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 5px 8px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      color: var(--text-muted);
+      margin-bottom: 4px;
     }
-    .lesson-item.current .lesson-time {
-      color: #34d399;
-      border-color: rgba(16, 185, 129, 0.4);
-      background: rgba(16, 185, 129, 0.1);
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
     }
-    .lesson-main {
-      flex: 1;
+    .bento-status-card.active .badge-dot {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+    .bento-status-card.active .bento-status-badge {
+      color: var(--success);
+    }
+    .bento-status-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .bento-status-timer {
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+    }
+    .bento-status-card.active .bento-status-timer {
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .bento-pills {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .pill-day {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 10px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .pill-day:hover {
+      border-color: var(--border-highlight);
+      color: var(--text-main);
+    }
+    .pill-day.active {
+      background: var(--surface-subtle);
+      border-color: var(--brand);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(94, 106, 210, 0.2);
+    }
+    .pill-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: transparent;
+    }
+    .pill-day.active .pill-dot {
+      background: var(--brand);
+    }
+
+    .lessons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bento-lesson {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      transition: border-color 0.15s;
+    }
+    .bento-lesson.current {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, var(--surface) 100%);
+    }
+    .lesson-idx-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      width: 24px;
+      height: 24px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lesson-info {
       min-width: 0;
     }
-    .lesson-name {
+    .lesson-title-text {
       font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 3px;
+    }
+    .lesson-time-code {
+      font-family: ui-monospace, "SF Mono", monospace;
+      font-size: 11px;
       font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: var(--text-muted);
     }
-    .lesson-teacher {
+    .lesson-teacher-name {
       font-size: 12px;
-      color: var(--muted);
-      margin-top: 1px;
+      color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
-    .del-btn {
+    .bento-lesson.current .lesson-time-code {
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .btn-del-lesson {
       display: none;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.25);
       color: var(--danger);
       width: 28px;
       height: 28px;
       border-radius: 6px;
-      font-size: 14px;
       cursor: pointer;
+      font-size: 12px;
       align-items: center;
       justify-content: center;
     }
-    .edit-mode .del-btn {
+    body.edit-mode .btn-del-lesson {
       display: flex;
     }
-
-    .add-block {
+    .add-bento {
       display: none;
+      background: var(--surface);
+      border: 1px dashed var(--border-highlight);
+      border-radius: var(--radius-md);
+      padding: 14px;
       margin-top: 12px;
-      padding: 12px;
-      background: var(--card);
-      border: 1px dashed var(--border);
-      border-radius: 10px;
       flex-direction: column;
       gap: 8px;
     }
-    .edit-mode .add-block {
+    body.edit-mode .add-bento {
       display: flex;
     }
-    .input-row {
-      display: flex;
-      gap: 8px;
-    }
-    input {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 10px;
-      border-radius: 6px;
+    .bento-input {
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      color: #fff;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
       outline: none;
-      flex: 1;
     }
-    input:focus {
-      border-color: var(--primary);
+    .bento-input:focus {
+      border-color: var(--brand);
     }
-    .time-input {
-      width: 80px;
-      flex: none;
-    }
-    .btn-add {
-      background: var(--primary);
-      color: #fff;
+    .btn-bento-action {
+      background: var(--brand);
       border: none;
-      padding: 8px;
-      border-radius: 6px;
+      color: #fff;
+      padding: 10px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-sync {
-      background: rgba(34,197,94,0.12);
-      color: var(--accent);
-      border: 1px solid rgba(34,197,94,0.3);
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
     }
 
-    .empty-state {
-      padding: 24px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 22px 0 10px 2px;
-    }
-    .bells-box {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+    .bells-accordion {
+      margin-top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
-    .bell-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .bell-row:last-child { border-bottom: none; }
-    .bell-time {
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-weight: 700;
-      color: #e2e8f0;
-      font-size: 13px;
-    }
-    .bell-break {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-
-    .keys-box {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    }
-    .key-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .bells-summary {
       padding: 12px 16px;
       font-size: 13px;
-      border-bottom: 1px solid var(--border);
-    }
-    .key-row:last-child { border-bottom: none; }
-    .key-code {
-      font-family: ui-monospace, "SF Mono", monospace;
       font-weight: 700;
-      color: #a78bfa;
-      letter-spacing: 1px;
-      background: rgba(168, 85, 247, 0.1);
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-    }
-    .key-del {
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.3);
-      color: var(--danger);
-      padding: 5px 11px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
+      color: var(--text-muted);
       cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .keys-empty { padding: 16px; color: var(--muted); font-size: 13px; text-align: center; font-style: italic; }
-    .keys-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .keys-actions input { flex: 1; min-width: 130px; }
-    .btn-key-add {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .btn-key-add:hover {
-      border-color: rgba(99, 102, 241, 0.5);
-      background: rgba(99, 102, 241, 0.12);
-    }
-    .btn-key-create {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .btn-key-create.admin {
-      background: #a855f7;
-    }
-    .admin-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
+      user-select: none;
     }
-    .admin-row:last-child { border-bottom: none; }
-    .admin-name { font-weight: 600; }
-    .admin-id { color: var(--muted); font-family: monospace; font-size: 11px; }
-    .admin-revoke {
-      background: rgba(239,68,68,0.1);
-      border: 1px solid rgba(239,68,68,0.3);
-      color: var(--danger);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
+    .bells-content {
+      display: none;
+      border-top: 1px solid var(--surface-border);
     }
-
-    .admin-card {
-      background: var(--card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    .bells-accordion.open .bells-content {
+      display: block;
     }
-    .admin-card-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 12px;
+    .bell-item-row {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #f1f5f9;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--surface-border);
+      font-size: 12px;
     }
-    .admin-grid {
+    .bell-item-row:last-child { border-bottom: none; }
+    .bell-time-val { font-family: ui-monospace, "SF Mono", monospace; font-weight: 600; }
+    .bell-break-val { color: var(--text-muted); }
+
+    .panel-view {
+      display: none;
+    }
+    .panel-view.active-tab {
+      display: block;
+    }
+    .bento-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-bottom: 12px;
     }
-    .btn-action {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 11px 12px;
-      border-radius: 10px;
+    .bento-card-admin {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .bento-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-tile {
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      padding: 12px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      transition: all 0.15s ease;
     }
-    .btn-action:hover {
-      transform: translateY(-1px);
+    .btn-tile:active {
+      transform: scale(0.98);
+      border-color: var(--brand);
     }
-    .btn-action.success {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
-      border-color: rgba(16, 185, 129, 0.35);
-      color: #34d399;
+    .btn-tile.danger {
+      color: var(--danger);
+      border-color: rgba(244, 63, 94, 0.2);
     }
-    .btn-action.primary {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
-      border-color: rgba(99, 102, 241, 0.35);
-      color: #818cf8;
-    }
-    .btn-action.purple {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%);
-      border-color: rgba(168, 85, 247, 0.35);
-      color: #c084fc;
-    }
-    .script-item {
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(15, 18, 26, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-highlight);
+      border-radius: 20px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      font-family: ui-monospace, monospace;
+      padding: 6px;
+      gap: 4px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 100;
     }
-    .btn-run {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .cmd-box {
-      display: flex;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .cmd-box input {
+    .nav-btn {
       flex: 1;
-    }
-    .btn-exec {
-      background: var(--primary);
-      color: #fff;
+      padding: 9px 0;
+      background: transparent;
       border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 14px;
       cursor: pointer;
-      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s ease;
     }
-    .btn-exec.ai {
-      background: #a855f7;
+    .nav-btn.active {
+      background: var(--surface-subtle);
+      color: #fff;
+      border: 1px solid var(--surface-border);
+    }
+    .nav-icon {
+      font-size: 16px;
+    }
+    .empty-placeholder {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--text-muted);
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
-  <div class="top-bar">
+
+  <div class="header-bento">
     <div>
-      <div class="title">Розклад уроків</div>
-      <div class="subtitle">11-Б Клас • Ліцей №1 смт Крижопіль</div>
+      <div class="header-title">11-Б • Розклад</div>
+      <div class="header-subtitle">Ліцей №1 смт Крижопіль</div>
     </div>
-    <div class="top-actions">
-      <button class="icon-btn" id="undo-btn" onclick="undoDelete()" title="Скасувати">↩</button>
-      <button class="icon-btn reset-btn" onclick="resetSchedule()" title="Скинути до оригіналу">✕</button>
-      <button class="edit-toggle-btn" id="edit-btn" onclick="toggleEditMode()">
-        <span>✏️</span> Редагувати
+    <div class="header-actions">
+      <button class="btn-icon" id="undo-btn" onclick="undoDelete()" style="display:none">↩</button>
+      <button class="btn-edit-toggle" id="edit-btn" onclick="toggleEditMode()">
+        ✏️ Редагувати
       </button>
     </div>
   </div>
 
-  <div class="status-panel" id="status-panel">
-    <div>
-      <div class="status-title" id="st-title">Розклад</div>
-      <div class="status-val" id="st-desc">Завантаження...</div>
-    </div>
-    <div class="status-timer" id="st-timer"></div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab" onclick="switchDay('Пн')">Пн</button>
-    <button class="tab" onclick="switchDay('Вт')">Вт</button>
-    <button class="tab" onclick="switchDay('Ср')">Ср</button>
-    <button class="tab" onclick="switchDay('Чт')">Чт</button>
-    <button class="tab" onclick="switchDay('Пт')">Пт</button>
-    <button class="tab" id="tab-admin" style="display:none" onclick="switchTab('admin')">⚙️ Пульт ПК</button>
-    <button class="tab" id="tab-keys" style="display:none" onclick="switchTab('keys')">🔑 Ключі</button>
-  </div>
-
-  <div class="lessons-list" id="lessons-list"></div>
-
-  <div class="add-block" id="add-block">
-    <div class="input-row">
-      <input type="text" id="new-time" class="time-input" placeholder="08:30" maxlength="5">
-      <input type="text" id="new-name" placeholder="Назва уроку">
-    </div>
-    <input type="text" id="new-teacher" placeholder="Вчитель (необов'язково)">
-    <button class="btn-add" onclick="addLesson()">+ Додати урок</button>
-    <button class="btn-sync" onclick="syncToBot()">💾 Зберегти в бот</button>
-  </div>
-
-  <div class="section-title">⏰ Розклад дзвінків</div>
-  <div class="bells-box">
-    <div class="bell-row"><span class="bell-time">08:30 – 09:15</span><span class="bell-break">перерва 10 хв</span></div>
-    <div class="bell-row"><span class="bell-time">09:25 – 10:10</span><span class="bell-break">перерва 20 хв</span></div>
-    <div class="bell-row"><span class="bell-time">10:30 – 11:15</span><span class="bell-break">перерва 20 хв</span></div>
-    <div class="bell-row"><span class="bell-time">11:35 – 12:20</span><span class="bell-break">перерва 10 хв</span></div>
-    <div class="bell-row"><span class="bell-time">12:30 – 13:15</span><span class="bell-break">перерва 10 хв</span></div>
-    <div class="bell-row"><span class="bell-time">13:25 – 14:10</span><span class="bell-break">перерва 5 хв</span></div>
-    <div class="bell-row"><span class="bell-time">14:15 – 15:00</span><span class="bell-break">кінець уроків</span></div>
-  </div>
-
-  <div id="admin-panel" style="display:none; margin-top: 18px;">
-    <div class="admin-card">
-      <div class="admin-card-title">💻 Керування сервером і ПК</div>
-      <div class="admin-grid">
-        <button class="btn-action success" onclick="sendAction({action: 'take_screenshot'})">📸 Скріншот екрану</button>
-        <button class="btn-action primary" onclick="sendAction({action: 'restart_bot'})">🔄 Перезапуск бота</button>
-        <button class="btn-action purple" onclick="sendAction({action: 'view_logs'})">📜 Журнал дій</button>
-        <button class="btn-action" onclick="sendAction({action: 'sync_github'})">🐙 Оновити сайт</button>
+  <div id="tab-view-schedule" class="panel-view active-tab">
+    <div class="bento-status-card" id="bento-status">
+      <div>
+        <div class="bento-status-badge">
+          <span class="badge-dot"></span>
+          <span id="st-title">Розклад</span>
+        </div>
+        <div class="bento-status-val" id="st-desc">Завантаження...</div>
       </div>
+      <div class="bento-status-timer" id="st-timer">--:--</div>
     </div>
 
-    <div class="admin-card">
-      <div class="admin-card-title">⚡ Виконання консольної команди</div>
-      <div class="cmd-box">
-        <input type="text" id="admin-cmd-input" placeholder="dir, tasklist, shutdown, etc...">
-        <button class="btn-exec" onclick="execCmd()">Виконати</button>
+    <div class="bento-pills">
+      <div class="pill-day" onclick="selectDay('Пн')"><span>Пн</span><span class="pill-dot"></span></div>
+      <div class="pill-day" onclick="selectDay('Вт')"><span>Вт</span><span class="pill-dot"></span></div>
+      <div class="pill-day" onclick="selectDay('Ср')"><span>Ср</span><span class="pill-dot"></span></div>
+      <div class="pill-day" onclick="selectDay('Чт')"><span>Чт</span><span class="pill-dot"></span></div>
+      <div class="pill-day" onclick="selectDay('Пт')"><span>Пт</span><span class="pill-dot"></span></div>
+    </div>
+
+    <div class="lessons-container" id="lessons-list"></div>
+
+    <div class="add-bento" id="add-bento">
+      <input type="text" id="new-time" class="bento-input" placeholder="Час (напр. 08:30)" maxlength="5">
+      <input type="text" id="new-name" class="bento-input" placeholder="Назва предмета">
+      <input type="text" id="new-teacher" class="bento-input" placeholder="Викладач">
+      <button class="btn-bento-action" onclick="addLesson()">+ Додати урок</button>
+      <button class="btn-bento-action" style="background:var(--success)" onclick="syncToBot()">💾 Зберегти в бот</button>
+    </div>
+
+    <div class="bells-accordion" id="bells-accordion" onclick="toggleBells()">
+      <div class="bells-summary">
+        <span>⏰ Графік дзвінків</span>
+        <span id="bells-arrow">▼</span>
+      </div>
+      <div class="bells-content">
+        <div class="bell-item-row"><span class="bell-time-val">08:30 – 09:15</span><span class="bell-break-val">перерва 10 хв</span></div>
+        <div class="bell-item-row"><span class="bell-time-val">09:25 – 10:10</span><span class="bell-break-val">перерва 20 хв</span></div>
+        <div class="bell-item-row"><span class="bell-time-val">10:30 – 11:15</span><span class="bell-break-val">перерва 20 хв</span></div>
+        <div class="bell-item-row"><span class="bell-time-val">11:35 – 12:20</span><span class="bell-break-val">перерва 10 хв</span></div>
+        <div class="bell-item-row"><span class="bell-time-val">12:30 – 13:15</span><span class="bell-break-val">перерва 10 хв</span></div>
+        <div class="bell-item-row"><span class="bell-time-val">13:25 – 14:10</span><span class="bell-break-val">перерва 5 хв</span></div>
+        <div class="bell-item-row"><span class="bell-time-val">14:15 – 15:00</span><span class="bell-break-val">кінець уроків</span></div>
       </div>
     </div>
   </div>
 
-  <div id="keys-panel" style="display:none; margin-top: 18px;">
-    <div class="section-title">🔑 Коди доступу для учнів</div>
-    <div class="keys-box" id="access-codes-box">
-      <div class="keys-empty">Завантаження...</div>
-    </div>
-    <div class="keys-actions">
-      <input type="text" id="new-access-code" placeholder="Новий код (до 20 символів)" maxlength="20">
-      <button class="btn-key-add" onclick="genAccessCode()">🎲 Випадковий</button>
-      <button class="btn-key-create" onclick="createCode(false)">➕ Створити</button>
-    </div>
-
-    <div class="section-title" style="margin-top:20px;">👑 Коди адміністратора</div>
-    <div class="keys-box" id="admin-codes-box">
-      <div class="keys-empty">Завантаження...</div>
-    </div>
-    <div class="keys-actions">
-      <input type="text" id="new-admin-code" placeholder="Новий код (до 20 символів)" maxlength="20">
-      <button class="btn-key-add" onclick="genAdminCode()">🎲 Випадковий</button>
-      <button class="btn-key-create admin" onclick="createCode(true)">➕ Створити</button>
+  <div id="tab-view-remote" class="panel-view">
+    <div class="bento-card-admin">
+      <div class="bento-card-title">📷 Медіа та стрім</div>
+      <div class="bento-grid-2">
+        <button class="btn-tile" onclick="sendAction({action: 'take_screenshot'})">
+          <span>📸</span> Скріншот
+        </button>
+        <button class="btn-tile" onclick="sendAction({action: 'webcam_photo'})">
+          <span>📷</span> Вебкамера
+        </button>
+      </div>
     </div>
 
-    <div class="section-title" style="margin-top:20px;">🛡 Адміністратори</div>
-    <div class="keys-box" id="admins-box">
-      <div class="keys-empty">Список завантажується через бот</div>
+    <div class="bento-card-admin">
+      <div class="bento-card-title">⚡ Швидкі дії ПК</div>
+      <div class="bento-grid-2">
+        <button class="btn-tile" onclick="sendAction({action: 'vol_mute'})">
+          <span>🔇</span> Без звуку
+        </button>
+        <button class="btn-tile" onclick="sendAction({action: 'media_play_pause'})">
+          <span>⏯️</span> Play / Pause
+        </button>
+        <button class="btn-tile" onclick="sendAction({action: 'screen_off'})">
+          <span>🖥️</span> Вимкнути екран
+        </button>
+        <button class="btn-tile danger" onclick="sendAction({action: 'restart_bot'})">
+          <span>🔄</span> Рестарт бота
+        </button>
+      </div>
     </div>
+
+    <div class="bento-card-admin">
+      <div class="bento-card-title">💻 Командний рядок Windows</div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="admin-cmd-input" class="bento-input" style="flex:1" placeholder="dir, tasklist, ping...">
+        <button class="btn-bento-action" onclick="execCmd()">Виконати</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-view-keys" class="panel-view">
+    <div class="bento-card-admin">
+      <div class="bento-card-title">🔑 Створити код доступу</div>
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <input type="text" id="new-access-code" class="bento-input" style="flex:1" placeholder="Код (до 20 симв)">
+        <button class="btn-tile" style="padding:8px 12px" onclick="genAccessCode()">🎲 Рандом</button>
+        <button class="btn-bento-action" onclick="createCode(false)">Створити</button>
+      </div>
+      <div id="access-codes-box" style="display:flex; flex-direction:column; gap:6px;">
+        <div class="empty-placeholder">Завантаження кодів...</div>
+      </div>
+    </div>
+
+    <div class="bento-card-admin">
+      <div class="bento-card-title">👑 Коди адміністратора</div>
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <input type="text" id="new-admin-code" class="bento-input" style="flex:1" placeholder="Адмін код">
+        <button class="btn-tile" style="padding:8px 12px" onclick="genAdminCode()">🎲 Рандом</button>
+        <button class="btn-bento-action" style="background:#a855f7" onclick="createCode(true)">Створити</button>
+      </div>
+      <div id="admin-codes-box" style="display:flex; flex-direction:column; gap:6px;">
+        <div class="empty-placeholder">Завантаження кодів...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-schedule" onclick="switchNavTab('schedule')">
+      <span class="nav-icon">📅</span>
+      <span>Розклад</span>
+    </button>
+    <button class="nav-btn" id="nav-remote" style="display:none" onclick="switchNavTab('remote')">
+      <span class="nav-icon">💻</span>
+      <span>Пульт ПК</span>
+    </button>
+    <button class="nav-btn" id="nav-keys" style="display:none" onclick="switchNavTab('keys')">
+      <span class="nav-icon">🔑</span>
+      <span>Ключі</span>
+    </button>
   </div>
 
   <script>
@@ -741,97 +657,36 @@
     let curDayIdx = new Date().getDay();
     let curDayKey = curDayIdx === 0 ? "Вс" : daysRu[curDayIdx - 1];
     let selectedDay = ["Пн", "Вт", "Ср", "Чт", "Пт"].includes(curDayKey) ? curDayKey : "Пн";
+    let keysData = { access: [], admin: [], admins: [] };
 
-    function saveSchedule() {
-      localStorage.setItem("user_schedule", JSON.stringify(schedule));
+    function haptic(type = "light") {
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+          window.Telegram.WebApp.HapticFeedback.impactOccurred(type);
+        }
+      } catch(e) {}
     }
 
-    function updateUndoBtn() {
-      const btn = document.getElementById("undo-btn");
-      if (btn) btn.disabled = undoStack.length === 0;
-    }
-
-    function toggleEditMode() {
-      isEditMode = !isEditMode;
-      document.body.classList.toggle("edit-mode", isEditMode);
-      const btn = document.getElementById("edit-btn");
-      btn.classList.toggle("active", isEditMode);
-      btn.innerHTML = isEditMode ? "<span>💾</span> Готово" : "<span>✏️</span> Редагувати";
-      updateUndoBtn();
-      renderList();
-    }
-
-    function deleteLesson(idx) {
-      const removed = schedule[selectedDay].splice(idx, 1)[0];
-      undoStack.push({ day: selectedDay, idx, item: removed });
-      saveSchedule();
-      updateUndoBtn();
-      renderList();
-      updateStatus();
-    }
-
-    function undoDelete() {
-      if (undoStack.length === 0) return;
-      const last = undoStack.pop();
-      if (!schedule[last.day]) schedule[last.day] = [];
-      schedule[last.day].splice(last.idx, 0, last.item);
-      saveSchedule();
-      if (selectedDay !== last.day) switchDay(last.day);
-      updateUndoBtn();
-      renderList();
-      updateStatus();
-    }
-
-    function resetSchedule() {
-      if (!confirm("Скинути всі зміни до оригіналу?")) return;
-      localStorage.removeItem("user_schedule");
-      schedule = JSON.parse(JSON.stringify(defaultSchedule));
-      undoStack = [];
-      updateUndoBtn();
-      if (!schedule[selectedDay] || schedule[selectedDay].length === 0) {
-        switchDay("Пн");
-      }
-      renderList();
-      updateStatus();
-    }
-
-    function addLesson() {
-      const time = document.getElementById("new-time").value.trim();
-      const name = document.getElementById("new-name").value.trim();
-      const teacher = document.getElementById("new-teacher").value.trim();
-      if (!time || !name) {
-        alert("Вкажіть час та назву уроку");
-        return;
-      }
-      if (!schedule[selectedDay]) schedule[selectedDay] = [];
-      schedule[selectedDay].push({ time, name, teacher });
-      schedule[selectedDay].sort((a, b) => a.time.localeCompare(b.time));
-      saveSchedule();
-      document.getElementById("new-time").value = "";
-      document.getElementById("new-name").value = "";
-      document.getElementById("new-teacher").value = "";
-      renderList();
-      updateStatus();
-    }
-
-    function switchDay(d) {
+    function selectDay(d) {
+      haptic("light");
       selectedDay = d;
-      const adminPanel = document.getElementById("admin-panel");
-      const keysPanel = document.getElementById("keys-panel");
-      const lessonsList = document.getElementById("lessons-list");
-      const bellsBox = document.querySelector(".bells-box");
-      const bellsTitle = document.querySelector(".section-title");
-
-      if (adminPanel) adminPanel.style.display = "none";
-      if (keysPanel) keysPanel.style.display = "none";
-      if (lessonsList) lessonsList.style.display = "flex";
-      if (bellsBox) bellsBox.style.display = "block";
-      if (bellsTitle) bellsTitle.style.display = "block";
-
-      document.querySelectorAll(".tab").forEach(b => {
-        b.classList.toggle("active", b.textContent.trim() === d);
+      document.querySelectorAll(".pill-day").forEach(el => {
+        el.classList.toggle("active", el.querySelector("span").textContent.trim() === d);
       });
       renderList();
+    }
+
+    function switchNavTab(tab) {
+      haptic("medium");
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel-view").forEach(p => p.classList.remove("active-tab"));
+
+      document.getElementById(`nav-${tab}`).classList.add("active");
+      document.getElementById(`tab-view-${tab}`).classList.add("active-tab");
+
+      if (tab === "keys") {
+        loadKeysFromStorage();
+      }
     }
 
     function renderList() {
@@ -842,7 +697,7 @@
       const isToday = (selectedDay === curDayKey);
 
       if (list.length === 0) {
-        container.innerHTML = '<div class="empty-state">Уроків немає</div>';
+        container.innerHTML = '<div class="empty-placeholder">Уроків на цей день немає</div>';
         return;
       }
 
@@ -855,14 +710,16 @@
         let numLabel = start < 8 * 60 + 30 ? 0 : regIdx++;
 
         return `
-          <div class="lesson-item ${isCur ? 'current' : ''}">
-            <div class="lesson-idx">${numLabel}</div>
-            <div class="lesson-time">${l.time}</div>
-            <div class="lesson-main">
-              <div class="lesson-name">${l.name}</div>
-              ${l.teacher ? `<div class="lesson-teacher">${l.teacher}</div>` : ''}
+          <div class="bento-lesson ${isCur ? 'current' : ''}">
+            <div class="lesson-idx-badge">${numLabel}</div>
+            <div class="lesson-info">
+              <div class="lesson-title-text">${l.name}</div>
+              <div class="lesson-meta">
+                <span class="lesson-time-code">${l.time}</span>
+                ${l.teacher ? `<span class="lesson-teacher-name">• ${l.teacher}</span>` : ''}
+              </div>
             </div>
-            <button class="del-btn" onclick="deleteLesson(${idx})">✕</button>
+            <button class="btn-del-lesson" onclick="deleteLesson(${idx})">✕</button>
           </div>
         `;
       }).join("");
@@ -872,16 +729,16 @@
       const now = new Date();
       const curMins = now.getHours() * 60 + now.getMinutes();
       const todayList = schedule[curDayKey] || [];
-      const panel = document.getElementById("status-panel");
+      const card = document.getElementById("bento-status");
       const title = document.getElementById("st-title");
       const desc = document.getElementById("st-desc");
       const timer = document.getElementById("st-timer");
 
       if (todayList.length === 0) {
-        panel.classList.remove("active");
+        card.classList.remove("active");
         title.textContent = "Сьогодні";
         desc.textContent = "Вихідний день";
-        timer.textContent = "";
+        timer.textContent = "00:00";
         return;
       }
 
@@ -893,140 +750,110 @@
 
       const ongoing = parsed.find(l => curMins >= l.start && curMins <= l.end);
       if (ongoing) {
-        panel.classList.add("active");
-        title.textContent = "Зараз йде урок";
+        card.classList.add("active");
+        title.textContent = "Зараз іде урок";
         desc.textContent = ongoing.name;
         timer.textContent = `${ongoing.end - curMins} хв`;
         return;
       }
 
-      panel.classList.remove("active");
+      card.classList.remove("active");
       const next = parsed.find(l => l.start > curMins);
       if (next) {
         title.textContent = curMins < parsed[0].start ? "До початку" : "Перерва";
         desc.textContent = next.name;
-        timer.textContent = `через ${next.start - curMins} хв`;
+        timer.textContent = `${next.start - curMins} хв`;
         return;
       }
 
       title.textContent = "Завершено";
-      desc.textContent = "Всі уроки закінчились";
-      timer.textContent = "";
+      desc.textContent = "Усі уроки завершено";
+      timer.textContent = "00:00";
+    }
+
+    function toggleEditMode() {
+      haptic("medium");
+      isEditMode = !isEditMode;
+      document.body.classList.toggle("edit-mode", isEditMode);
+      const btn = document.getElementById("edit-btn");
+      btn.classList.toggle("active", isEditMode);
+      btn.innerHTML = isEditMode ? "💾 Готово" : "✏️ Редагувати";
+      document.getElementById("undo-btn").style.display = isEditMode ? "flex" : "none";
+      renderList();
+    }
+
+    function deleteLesson(idx) {
+      haptic("heavy");
+      const removed = schedule[selectedDay].splice(idx, 1)[0];
+      undoStack.push({ day: selectedDay, idx, item: removed });
+      localStorage.setItem("user_schedule", JSON.stringify(schedule));
+      renderList();
+      updateStatus();
+    }
+
+    function undoDelete() {
+      if (!undoStack.length) return;
+      haptic("light");
+      const last = undoStack.pop();
+      if (!schedule[last.day]) schedule[last.day] = [];
+      schedule[last.day].splice(last.idx, 0, last.item);
+      localStorage.setItem("user_schedule", JSON.stringify(schedule));
+      if (selectedDay !== last.day) selectDay(last.day);
+      renderList();
+      updateStatus();
+    }
+
+    function addLesson() {
+      haptic("light");
+      const time = document.getElementById("new-time").value.trim();
+      const name = document.getElementById("new-name").value.trim();
+      const teacher = document.getElementById("new-teacher").value.trim();
+      if (!time || !name) { alert("Вкажіть час і назву"); return; }
+      if (!schedule[selectedDay]) schedule[selectedDay] = [];
+      schedule[selectedDay].push({ time, name, teacher });
+      schedule[selectedDay].sort((a, b) => a.time.localeCompare(b.time));
+      localStorage.setItem("user_schedule", JSON.stringify(schedule));
+      document.getElementById("new-time").value = "";
+      document.getElementById("new-name").value = "";
+      document.getElementById("new-teacher").value = "";
+      renderList();
+      updateStatus();
+    }
+
+    function toggleBells() {
+      haptic("light");
+      const el = document.getElementById("bells-accordion");
+      el.classList.toggle("open");
+      document.getElementById("bells-arrow").textContent = el.classList.contains("open") ? "▲" : "▼";
     }
 
     function syncToBot() {
+      haptic("medium");
       const tg = window.Telegram ? window.Telegram.WebApp : null;
-      localStorage.setItem("user_schedule", JSON.stringify(schedule));
       if (!tg || !tg.sendData) {
-        alert("Помилка: Telegram WebApp SDK не знайдено.");
+        alert("Помилка Telegram WebApp");
         return;
       }
-      const payload = {
-        action: "save_schedule",
-        schedule: schedule
-      };
-      try {
-        tg.sendData(JSON.stringify(payload));
-      } catch (err) {
-        alert("Помилка: відкрийте Web App через нижню кнопку чату '📱 Відкрити Web App', щоб зберегти розклад у бот.");
+      tg.sendData(JSON.stringify({ action: "save_schedule", schedule }));
+    }
+
+    function sendAction(payload) {
+      haptic("medium");
+      const tg = window.Telegram ? window.Telegram.WebApp : null;
+      if (!tg || !tg.sendData) {
+        alert("Telegram WebApp не знайдено");
+        return false;
       }
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const isAdmin = urlParams.get("admin") === "1";
-    if (!isAdmin) {
-      const topActions = document.querySelector(".top-actions");
-      if (topActions) topActions.style.display = "none";
-      try { localStorage.removeItem("user_schedule"); } catch (e) {}
-    } else {
-      const adminBtn = document.getElementById("tab-admin");
-      const keysBtn = document.getElementById("tab-keys");
-      if (adminBtn) adminBtn.style.display = "";
-      if (keysBtn) keysBtn.style.display = "";
-    }
-
-    async function loadRemoteSchedule() {
-      const urls = [
-        "schedule.json?t=" + Date.now(),
-        "https://raw.githubusercontent.com/quweent/raspisanie_test/main/schedule.json?t=" + Date.now()
-      ];
-      for (const u of urls) {
-        try {
-          const res = await fetch(u, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
-          if (res.ok) {
-            const data = await res.json();
-            if (data && typeof data === "object") {
-              if (isEditMode) {
-                break;
-              }
-              schedule = data;
-              if (isAdmin) {
-                try { localStorage.setItem("user_schedule", JSON.stringify(schedule)); } catch (e) {}
-              }
-              renderList();
-              updateStatus();
-              break;
-            }
-          }
-        } catch (e) {}
-      }
-    }
-
-    switchDay(selectedDay);
-    updateStatus();
-
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
-
-    let currentTab = "schedule";
-    let keysData = { access: [], admin: [], admins: [] };
-
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-      const schedDays = ["Пн","Вт","Ср","Чт","Пт"];
-      const adminPanel = document.getElementById("admin-panel");
-      const keysPanel = document.getElementById("keys-panel");
-      const lessonsList = document.getElementById("lessons-list");
-      const addBlock = document.getElementById("add-block");
-      const bellsBox = document.querySelector(".bells-box");
-      const bellsTitle = document.querySelector(".section-title");
-
-      if (tab === "admin") {
-        document.getElementById("tab-admin").classList.add("active");
-        if (adminPanel) adminPanel.style.display = "block";
-        if (keysPanel) keysPanel.style.display = "none";
-        lessonsList.style.display = "none";
-        if (addBlock) addBlock.style.display = "none";
-        bellsBox.style.display = "none";
-        bellsTitle.style.display = "none";
-      } else if (tab === "keys") {
-        document.getElementById("tab-keys").classList.add("active");
-        if (adminPanel) adminPanel.style.display = "none";
-        if (keysPanel) keysPanel.style.display = "block";
-        lessonsList.style.display = "none";
-        if (addBlock) addBlock.style.display = "none";
-        bellsBox.style.display = "none";
-        bellsTitle.style.display = "none";
-        loadKeysFromStorage();
-      } else {
-        if (adminPanel) adminPanel.style.display = "none";
-        if (keysPanel) keysPanel.style.display = "none";
-        lessonsList.style.display = "flex";
-        bellsBox.style.display = "block";
-        bellsTitle.style.display = "block";
-        switchDay(tab);
-      }
+      tg.sendData(JSON.stringify(payload));
+      return true;
     }
 
     function execCmd() {
       const inp = document.getElementById("admin-cmd-input");
       const cmd = inp.value.trim();
-      if (!cmd) { alert("Введіть команду"); return; }
-      const ok = sendAction({ action: "exec_cmd", command: cmd });
-      if (ok) inp.value = "";
+      if (!cmd) return;
+      sendAction({ action: "exec_cmd", command: cmd });
+      inp.value = "";
     }
 
     function loadKeysFromStorage() {
@@ -1038,81 +865,46 @@
     }
 
     function renderKeys() {
-      const accessBox = document.getElementById("access-codes-box");
-      const adminBox = document.getElementById("admin-codes-box");
-      const adminsBox = document.getElementById("admins-box");
-
+      const acc = document.getElementById("access-codes-box");
+      const adm = document.getElementById("admin-codes-box");
       if (!keysData.access.length) {
-        accessBox.innerHTML = '<div class="keys-empty">Немає активних кодів доступу</div>';
+        acc.innerHTML = '<div class="empty-placeholder">Немає кодів доступу</div>';
       } else {
-        accessBox.innerHTML = keysData.access.map(c => `
-          <div class="key-row">
-            <span class="key-code">${c}</span>
-            <button class="key-del" onclick="deleteCode('${c}', false)">✕ Видалити</button>
-          </div>`).join("");
+        acc.innerHTML = keysData.access.map(c => `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-subtle); padding:8px 12px; border-radius:8px; border:1px solid var(--surface-border)">
+            <span style="font-family:monospace; font-weight:700">${c}</span>
+            <button class="btn-del-lesson" style="display:flex" onclick="deleteCode('${c}', false)">✕</button>
+          </div>
+        `).join("");
       }
-
       if (!keysData.admin.length) {
-        adminBox.innerHTML = '<div class="keys-empty">Немає активних кодів адміністратора</div>';
+        adm.innerHTML = '<div class="empty-placeholder">Немає кодів адміністратора</div>';
       } else {
-        adminBox.innerHTML = keysData.admin.map(c => `
-          <div class="key-row" style="border-left: 2px solid #a855f7;">
-            <span class="key-code" style="color:#c084fc">${c}</span>
-            <button class="key-del" onclick="deleteCode('${c}', true)">✕ Видалити</button>
-          </div>`).join("");
+        adm.innerHTML = keysData.admin.map(c => `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-subtle); padding:8px 12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3)">
+            <span style="font-family:monospace; font-weight:700; color:#c084fc">${c}</span>
+            <button class="btn-del-lesson" style="display:flex" onclick="deleteCode('${c}', true)">✕</button>
+          </div>
+        `).join("");
       }
-
-      if (!keysData.admins || !keysData.admins.length) {
-        adminsBox.innerHTML = '<div class="keys-empty">Список оновлюється через кнопку в боті</div>';
-      } else {
-        adminsBox.innerHTML = keysData.admins.map(a => `
-          <div class="admin-row">
-            <div>
-              <div class="admin-name">${a.name || "Без імені"}</div>
-              <div class="admin-id">ID: ${a.user_id}</div>
-            </div>
-            <button class="admin-revoke" onclick="revokeAdmin(${a.user_id})">Відкликати</button>
-          </div>`).join("");
-      }
-    }
-
-    function sendAction(payload) {
-      const tg = window.Telegram ? window.Telegram.WebApp : null;
-      if (!tg || !tg.sendData) {
-        alert("Відкрийте Web App через кнопку в боті");
-        return false;
-      }
-      tg.sendData(JSON.stringify(payload));
-      return true;
     }
 
     function randomCode(len) {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      let s = "";
-      for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
-      return s;
+      const ch = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let res = "";
+      for (let i = 0; i < len; i++) res += ch[Math.floor(Math.random() * ch.length)];
+      return res;
     }
-
-    function genAccessCode() {
-      document.getElementById("new-access-code").value = randomCode(6);
-    }
-
-    function genAdminCode() {
-      document.getElementById("new-admin-code").value = randomCode(8);
-    }
+    function genAccessCode() { document.getElementById("new-access-code").value = randomCode(6); }
+    function genAdminCode() { document.getElementById("new-admin-code").value = randomCode(8); }
 
     function createCode(isAdmin) {
       const inp = document.getElementById(isAdmin ? "new-admin-code" : "new-access-code");
       const code = inp.value.trim();
-      if (!code) { alert("Введіть код"); return; }
-      if (code.length > 20) { alert("Занадто довгий код"); return; }
-      const ok = sendAction({ action: "create_code", code, is_admin: isAdmin });
-      if (ok) {
-        if (isAdmin) {
-          keysData.admin.unshift(code);
-        } else {
-          keysData.access.unshift(code);
-        }
+      if (!code) return;
+      if (sendAction({ action: "create_code", code, is_admin: isAdmin })) {
+        if (isAdmin) keysData.admin.unshift(code);
+        else keysData.access.unshift(code);
         localStorage.setItem("keys_data", JSON.stringify(keysData));
         inp.value = "";
         renderKeys();
@@ -1121,26 +913,30 @@
 
     function deleteCode(code, isAdmin) {
       if (!confirm(`Видалити код ${code}?`)) return;
-      const ok = sendAction({ action: "delete_code", code, is_admin: isAdmin });
-      if (ok) {
-        if (isAdmin) {
-          keysData.admin = keysData.admin.filter(c => c !== code);
-        } else {
-          keysData.access = keysData.access.filter(c => c !== code);
-        }
+      if (sendAction({ action: "delete_code", code, is_admin: isAdmin })) {
+        if (isAdmin) keysData.admin = keysData.admin.filter(c => c !== code);
+        else keysData.access = keysData.access.filter(c => c !== code);
         localStorage.setItem("keys_data", JSON.stringify(keysData));
         renderKeys();
       }
     }
 
-    function revokeAdmin(userId) {
-      if (!confirm(`Відкликати права адміністратора у ID ${userId}?`)) return;
-      const ok = sendAction({ action: "revoke_admin", user_id: userId });
-      if (ok) {
-        keysData.admins = keysData.admins.filter(a => a.user_id !== userId);
-        localStorage.setItem("keys_data", JSON.stringify(keysData));
-        renderKeys();
-      }
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get("admin") === "1";
+    if (isAdmin) {
+      document.getElementById("nav-remote").style.display = "flex";
+      document.getElementById("nav-keys").style.display = "flex";
+    } else {
+      document.getElementById("edit-btn").style.display = "none";
+    }
+
+    selectDay(selectedDay);
+    updateStatus();
+    setInterval(updateStatus, 30000);
+
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
     }
   </script>
 </body>

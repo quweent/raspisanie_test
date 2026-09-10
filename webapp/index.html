@@ -10,609 +10,501 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     :root {
-      --bg: #07090e;
-      --surface: #0f121a;
-      --surface-subtle: #141824;
-      --surface-border: #1e2436;
-      --border-highlight: #2c344e;
-      --text-main: #f8fafc;
-      --text-muted: #8b95a8;
-      --brand: #5e6ad2;
-      --brand-glow: rgba(94, 106, 210, 0.25);
-      --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.2);
-      --danger: #f43f5e;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
+      --board: #182922;
+      --board-soft: #1f342b;
+      --board-raised: #253d32;
+      --line: rgba(238, 243, 234, 0.10);
+      --line-strong: rgba(238, 243, 234, 0.18);
+      --chalk: #eef2ea;
+      --chalk-dim: #93a99a;
+      --chalk-faint: #6d8478;
+      --yellow: #f2c15c;
+      --yellow-dim: rgba(242, 193, 92, 0.16);
+      --coral: #ea7b6c;
+      --coral-dim: rgba(234, 123, 108, 0.14);
+      --blue: #7fb6c4;
+      --blue-dim: rgba(127, 182, 196, 0.14);
+      --r-tag: 7px;
+      --r-card: 14px;
+      --r-pill: 999px;
+      --font-head: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
     }
     body {
-      background-color: var(--bg);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(94, 106, 210, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-main);
-      padding: 16px;
-      padding-bottom: 92px;
+      font-family: var(--font-body);
+      background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(242, 193, 92, 0.05), transparent 60%),
+        radial-gradient(ellipse 700px 500px at 100% 110%, rgba(127, 182, 196, 0.05), transparent 55%),
+        var(--board);
+      color: var(--chalk);
+      padding: 18px 16px 100px;
       min-height: 100vh;
     }
+    button, input {
+      font-family: inherit;
+    }
+    :focus-visible {
+      outline: 2px solid var(--yellow);
+      outline-offset: 2px;
+    }
 
-    .header-bento {
+    /* header */
+    .top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
     }
-    .header-title {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #fff;
-    }
-    .header-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-      font-weight: 500;
-    }
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .btn-icon {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      color: var(--text-muted);
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.15s ease;
-    }
-    .btn-icon:hover {
-      border-color: var(--border-highlight);
-      color: var(--text-main);
-    }
-    .btn-edit-toggle {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      color: var(--text-muted);
-      padding: 0 12px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
+    .top-class {
+      font-family: var(--font-head);
+      font-size: 22px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      letter-spacing: -0.2px;
     }
-    .btn-edit-toggle.active {
-      background: var(--brand);
-      border-color: var(--brand);
-      color: #fff;
-      box-shadow: 0 0 16px var(--brand-glow);
-    }
-
-    .bento-status-card {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 16px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 12px;
-      position: relative;
-      overflow: hidden;
-    }
-    .bento-status-card::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
-    }
-    .bento-status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--text-muted);
-    }
-    .bento-status-card.active .badge-dot {
-      background: var(--success);
-      box-shadow: 0 0 8px var(--success);
-    }
-    .bento-status-card.active .bento-status-badge {
-      color: var(--success);
-    }
-    .bento-status-val {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .bento-status-timer {
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: var(--surface-subtle);
-      border: 1px solid var(--surface-border);
-      padding: 6px 12px;
-      border-radius: var(--radius-sm);
-    }
-    .bento-status-card.active .bento-status-timer {
-      color: var(--success);
-      border-color: rgba(16, 185, 129, 0.3);
-      background: rgba(16, 185, 129, 0.08);
-    }
-
-    .bento-pills {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-    .pill-day {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius-md);
-      padding: 10px 0;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .pill-day:hover {
-      border-color: var(--border-highlight);
-      color: var(--text-main);
-    }
-    .pill-day.active {
-      background: var(--surface-subtle);
-      border-color: var(--brand);
-      color: #fff;
-      box-shadow: 0 0 14px rgba(94, 106, 210, 0.2);
-    }
-    .pill-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: transparent;
-    }
-    .pill-day.active .pill-dot {
-      background: var(--brand);
-    }
-
-    .lessons-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .bento-lesson {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 12px;
-      transition: border-color 0.15s;
-    }
-    .bento-lesson.current {
-      border-color: rgba(16, 185, 129, 0.5);
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, var(--surface) 100%);
-    }
-    .lesson-idx-badge {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--text-muted);
-      width: 24px;
-      height: 24px;
-      background: var(--surface-subtle);
-      border: 1px solid var(--surface-border);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .lesson-info {
-      min-width: 0;
-    }
-    .lesson-title-text {
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .lesson-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .top-place {
+      font-size: 12.5px;
+      color: var(--chalk-dim);
       margin-top: 3px;
     }
-    .lesson-time-code {
-      font-family: ui-monospace, "SF Mono", monospace;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-    .lesson-teacher-name {
-      font-size: 12px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .bento-lesson.current .lesson-time-code {
-      color: var(--success);
-      font-weight: 700;
-    }
-
-    .btn-del-lesson {
-      display: none;
-      background: rgba(244, 63, 94, 0.1);
-      border: 1px solid rgba(244, 63, 94, 0.25);
-      color: var(--danger);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      align-items: center;
-      justify-content: center;
-    }
-    body.edit-mode .btn-del-lesson {
+    .top-actions {
       display: flex;
-    }
-    .add-bento {
-      display: none;
-      background: var(--surface);
-      border: 1px dashed var(--border-highlight);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      margin-top: 12px;
-      flex-direction: column;
       gap: 8px;
     }
-    body.edit-mode .add-bento {
+    .chip-btn {
+      background: var(--board-soft);
+      border: 1px solid var(--line-strong);
+      color: var(--chalk-dim);
+      height: 34px;
+      padding: 0 13px;
+      border-radius: var(--r-pill);
+      font-size: 12.5px;
+      font-weight: 600;
       display: flex;
-    }
-    .bento-input {
-      background: var(--surface-subtle);
-      border: 1px solid var(--surface-border);
-      color: #fff;
-      padding: 9px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      outline: none;
-    }
-    .bento-input:focus {
-      border-color: var(--brand);
-    }
-    .btn-bento-action {
-      background: var(--brand);
-      border: none;
-      color: #fff;
-      padding: 10px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 700;
+      align-items: center;
+      gap: 6px;
       cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .chip-btn:active { transform: scale(0.96); }
+    .chip-btn.on {
+      background: var(--yellow-dim);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+    .chip-icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--r-pill);
+      background: var(--board-soft);
+      border: 1px solid var(--line-strong);
+      color: var(--chalk-dim);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
     }
 
-    .bells-accordion {
-      margin-top: 16px;
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-    }
-    .bells-summary {
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
+    /* now-card */
+    .now-card {
+      position: relative;
+      background: var(--board-soft);
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--r-card);
+      padding: 16px 18px;
+      margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      user-select: none;
+      gap: 12px;
+      transform: rotate(-0.3deg);
     }
-    .bells-content {
-      display: none;
-      border-top: 1px solid var(--surface-border);
+    .now-eyebrow {
+      font-size: 11.5px;
+      color: var(--chalk-faint);
+      margin-bottom: 3px;
     }
-    .bells-accordion.open .bells-content {
-      display: block;
+    .now-card.live .now-eyebrow { color: var(--yellow); }
+    .now-what {
+      font-size: 16.5px;
+      font-weight: 600;
+      max-width: 62vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .bell-item-row {
+    .now-clock {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--chalk-dim);
+      white-space: nowrap;
+    }
+    .now-card.live .now-clock { color: var(--yellow); }
+
+    /* day tabs */
+    .day-strip {
       display: flex;
-      justify-content: space-between;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--surface-border);
+      gap: 4px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0;
+    }
+    .day-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--chalk-faint);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 9px 0 11px;
+      cursor: pointer;
+      position: relative;
+    }
+    .day-tab::after {
+      content: "";
+      position: absolute;
+      left: 12%; right: 12%; bottom: -1px;
+      height: 2px;
+      background: transparent;
+      border-radius: 2px;
+    }
+    .day-tab.active {
+      color: var(--chalk);
+    }
+    .day-tab.active::after {
+      background: var(--yellow);
+    }
+
+    /* lessons */
+    .lessons {
+      display: flex;
+      flex-direction: column;
+    }
+    .lesson-row {
+      display: grid;
+      grid-template-columns: 26px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 2px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .lesson-row:last-child { border-bottom: none; }
+    .lesson-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--chalk-faint);
+      text-align: center;
+    }
+    .lesson-row.live .lesson-num { color: var(--yellow); font-weight: 700; }
+    .lesson-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .lesson-sub {
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--chalk-dim);
+    }
+    .lesson-sub .t { font-family: var(--font-mono); }
+    .lesson-row.live .lesson-name { color: var(--yellow); }
+    .lesson-del {
+      display: none;
+      background: var(--coral-dim);
+      border: 1px solid rgba(234, 123, 108, 0.35);
+      color: var(--coral);
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      cursor: pointer;
       font-size: 12px;
     }
-    .bell-item-row:last-child { border-bottom: none; }
-    .bell-time-val { font-family: ui-monospace, "SF Mono", monospace; font-weight: 600; }
-    .bell-break-val { color: var(--text-muted); }
+    body.edit .lesson-del { display: block; }
+    .empty-note {
+      text-align: center;
+      padding: 34px 0;
+      color: var(--chalk-faint);
+      font-size: 13px;
+    }
 
-    .panel-view {
+    /* add form */
+    .add-form {
       display: none;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 14px;
+      background: var(--board-soft);
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--r-card);
     }
-    .panel-view.active-tab {
-      display: block;
+    body.edit .add-form { display: flex; }
+    .field {
+      background: var(--board);
+      border: 1px solid var(--line-strong);
+      color: var(--chalk);
+      padding: 10px 12px;
+      border-radius: 9px;
+      font-size: 13.5px;
+      outline: none;
     }
-    .bento-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 12px;
+    .field:focus { border-color: var(--yellow); }
+    .btn-solid {
+      border: none;
+      color: #16241d;
+      background: var(--yellow);
+      padding: 11px;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
     }
-    .bento-card-admin {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius-md);
+    .btn-solid.alt { background: var(--blue); }
+    .btn-solid:active { transform: scale(0.98); }
+
+    /* bells */
+    .bells {
+      margin-top: 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-card);
+      overflow: hidden;
+    }
+    .bells-head {
+      padding: 13px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--chalk-dim);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      user-select: none;
+    }
+    .bells-body { display: none; border-top: 1px solid var(--line); }
+    .bells.open .bells-body { display: block; }
+    .bell-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 16px;
+      font-size: 12.5px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .bell-row:last-child { border-bottom: none; }
+    .bell-t { font-family: var(--font-mono); font-weight: 600; }
+    .bell-b { color: var(--chalk-faint); }
+
+    /* admin panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .block {
+      background: var(--board-soft);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-card);
       padding: 16px;
       margin-bottom: 12px;
     }
-    .bento-card-title {
-      font-size: 13px;
+    .block-title {
+      font-size: 12.5px;
       font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: var(--chalk-dim);
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
-    .btn-tile {
-      background: var(--surface-subtle);
-      border: 1px solid var(--surface-border);
-      color: var(--text-main);
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
+    .tile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .tile {
+      background: var(--board);
+      border: 1px solid var(--line-strong);
+      color: var(--chalk);
+      padding: 13px 8px;
+      border-radius: 10px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 6px;
       text-align: center;
-      transition: all 0.15s ease;
     }
-    .btn-tile:active {
-      transform: scale(0.98);
-      border-color: var(--brand);
+    .tile:active { transform: scale(0.97); border-color: var(--yellow); }
+    .tile.warn { color: var(--coral); border-color: rgba(234, 123, 108, 0.3); }
+    .row-inline { display: flex; gap: 8px; }
+    .row-inline .field { flex: 1; }
+    .code-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--board);
+      border: 1px solid var(--line-strong);
+      padding: 9px 12px;
+      border-radius: 9px;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 13px;
     }
-    .btn-tile.danger {
-      color: var(--danger);
-      border-color: rgba(244, 63, 94, 0.2);
-    }
+    .code-item.adm { border-color: rgba(127, 182, 196, 0.35); color: var(--blue); }
 
-    .bottom-nav {
+    /* bottom nav */
+    .tabbar {
       position: fixed;
-      bottom: 16px;
+      bottom: 14px;
       left: 16px;
       right: 16px;
-      background: rgba(15, 18, 26, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-highlight);
-      border-radius: 20px;
+      background: rgba(31, 52, 43, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line-strong);
+      border-radius: 18px;
       display: flex;
-      padding: 6px;
+      padding: 5px;
       gap: 4px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      z-index: 100;
+      z-index: 50;
     }
-    .nav-btn {
+    .tab-btn {
       flex: 1;
-      padding: 9px 0;
       background: transparent;
       border: none;
-      color: var(--text-muted);
-      font-size: 12px;
+      color: var(--chalk-faint);
+      font-size: 11.5px;
       font-weight: 700;
-      border-radius: 14px;
+      padding: 9px 0 7px;
+      border-radius: 13px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 3px;
-      transition: all 0.15s ease;
     }
-    .nav-btn.active {
-      background: var(--surface-subtle);
-      color: #fff;
-      border: 1px solid var(--surface-border);
+    .tab-btn.active {
+      background: var(--board-raised);
+      color: var(--yellow);
     }
-    .nav-icon {
-      font-size: 16px;
-    }
-    .empty-placeholder {
-      text-align: center;
-      padding: 30px 0;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
+    .tab-ico { font-size: 15px; }
   </style>
 </head>
 <body>
 
-  <div class="header-bento">
+  <div class="top">
     <div>
-      <div class="header-title">11-Б • Розклад</div>
-      <div class="header-subtitle">Ліцей №1 смт Крижопіль</div>
+      <div class="top-class">11-Б · Розклад</div>
+      <div class="top-place">Ліцей №1 смт Крижопіль</div>
     </div>
-    <div class="header-actions">
-      <button class="btn-icon" id="undo-btn" onclick="undoDelete()" style="display:none">↩</button>
-      <button class="btn-edit-toggle" id="edit-btn" onclick="toggleEditMode()">
-        ✏️ Редагувати
-      </button>
+    <div class="top-actions">
+      <button class="chip-icon-btn" id="undo-btn" onclick="undoDelete()">↩</button>
+      <button class="chip-btn" id="edit-btn" onclick="toggleEditMode()">✏️ Редагувати</button>
     </div>
   </div>
 
-  <div id="tab-view-schedule" class="panel-view active-tab">
-    <div class="bento-status-card" id="bento-status">
+  <div id="panel-schedule" class="panel active">
+    <div class="now-card" id="now-card">
       <div>
-        <div class="bento-status-badge">
-          <span class="badge-dot"></span>
-          <span id="st-title">Розклад</span>
-        </div>
-        <div class="bento-status-val" id="st-desc">Завантаження...</div>
+        <div class="now-eyebrow" id="now-eyebrow">Розклад</div>
+        <div class="now-what" id="now-what">Завантаження...</div>
       </div>
-      <div class="bento-status-timer" id="st-timer">--:--</div>
+      <div class="now-clock" id="now-clock">--:--</div>
     </div>
 
-    <div class="bento-pills">
-      <div class="pill-day" onclick="selectDay('Пн')"><span>Пн</span><span class="pill-dot"></span></div>
-      <div class="pill-day" onclick="selectDay('Вт')"><span>Вт</span><span class="pill-dot"></span></div>
-      <div class="pill-day" onclick="selectDay('Ср')"><span>Ср</span><span class="pill-dot"></span></div>
-      <div class="pill-day" onclick="selectDay('Чт')"><span>Чт</span><span class="pill-dot"></span></div>
-      <div class="pill-day" onclick="selectDay('Пт')"><span>Пт</span><span class="pill-dot"></span></div>
+    <div class="day-strip" id="day-strip">
+      <button class="day-tab" data-day="Пн" onclick="selectDay('Пн')">Пн</button>
+      <button class="day-tab" data-day="Вт" onclick="selectDay('Вт')">Вт</button>
+      <button class="day-tab" data-day="Ср" onclick="selectDay('Ср')">Ср</button>
+      <button class="day-tab" data-day="Чт" onclick="selectDay('Чт')">Чт</button>
+      <button class="day-tab" data-day="Пт" onclick="selectDay('Пт')">Пт</button>
     </div>
 
-    <div class="lessons-container" id="lessons-list"></div>
+    <div class="lessons" id="lessons-list"></div>
 
-    <div class="add-bento" id="add-bento">
-      <input type="text" id="new-time" class="bento-input" placeholder="Час (напр. 08:30)" maxlength="5">
-      <input type="text" id="new-name" class="bento-input" placeholder="Назва предмета">
-      <input type="text" id="new-teacher" class="bento-input" placeholder="Викладач">
-      <button class="btn-bento-action" onclick="addLesson()">+ Додати урок</button>
-      <button class="btn-bento-action" style="background:var(--success)" onclick="syncToBot()">💾 Зберегти в бот</button>
+    <div class="add-form" id="add-form">
+      <input type="text" id="new-time" class="field" placeholder="Час (напр. 08:30)" maxlength="5">
+      <input type="text" id="new-name" class="field" placeholder="Назва предмета">
+      <input type="text" id="new-teacher" class="field" placeholder="Викладач">
+      <button class="btn-solid" onclick="addLesson()">+ Додати урок</button>
+      <button class="btn-solid alt" onclick="syncToBot()">💾 Зберегти в бот</button>
     </div>
 
-    <div class="bells-accordion" id="bells-accordion" onclick="toggleBells()">
-      <div class="bells-summary">
+    <div class="bells" id="bells" onclick="toggleBells()">
+      <div class="bells-head">
         <span>⏰ Графік дзвінків</span>
-        <span id="bells-arrow">▼</span>
+        <span id="bells-arrow">▾</span>
       </div>
-      <div class="bells-content">
-        <div class="bell-item-row"><span class="bell-time-val">08:30 – 09:15</span><span class="bell-break-val">перерва 10 хв</span></div>
-        <div class="bell-item-row"><span class="bell-time-val">09:25 – 10:10</span><span class="bell-break-val">перерва 20 хв</span></div>
-        <div class="bell-item-row"><span class="bell-time-val">10:30 – 11:15</span><span class="bell-break-val">перерва 20 хв</span></div>
-        <div class="bell-item-row"><span class="bell-time-val">11:35 – 12:20</span><span class="bell-break-val">перерва 10 хв</span></div>
-        <div class="bell-item-row"><span class="bell-time-val">12:30 – 13:15</span><span class="bell-break-val">перерва 10 хв</span></div>
-        <div class="bell-item-row"><span class="bell-time-val">13:25 – 14:10</span><span class="bell-break-val">перерва 5 хв</span></div>
-        <div class="bell-item-row"><span class="bell-time-val">14:15 – 15:00</span><span class="bell-break-val">кінець уроків</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="tab-view-remote" class="panel-view">
-    <div class="bento-card-admin">
-      <div class="bento-card-title">📷 Медіа та стрім</div>
-      <div class="bento-grid-2">
-        <button class="btn-tile" onclick="sendAction({action: 'take_screenshot'})">
-          <span>📸</span> Скріншот
-        </button>
-        <button class="btn-tile" onclick="sendAction({action: 'webcam_photo'})">
-          <span>📷</span> Вебкамера
-        </button>
-      </div>
-    </div>
-
-    <div class="bento-card-admin">
-      <div class="bento-card-title">⚡ Швидкі дії ПК</div>
-      <div class="bento-grid-2">
-        <button class="btn-tile" onclick="sendAction({action: 'vol_mute'})">
-          <span>🔇</span> Без звуку
-        </button>
-        <button class="btn-tile" onclick="sendAction({action: 'media_play_pause'})">
-          <span>⏯️</span> Play / Pause
-        </button>
-        <button class="btn-tile" onclick="sendAction({action: 'screen_off'})">
-          <span>🖥️</span> Вимкнути екран
-        </button>
-        <button class="btn-tile danger" onclick="sendAction({action: 'restart_bot'})">
-          <span>🔄</span> Рестарт бота
-        </button>
-      </div>
-    </div>
-
-    <div class="bento-card-admin">
-      <div class="bento-card-title">💻 Командний рядок Windows</div>
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="admin-cmd-input" class="bento-input" style="flex:1" placeholder="dir, tasklist, ping...">
-        <button class="btn-bento-action" onclick="execCmd()">Виконати</button>
+      <div class="bells-body">
+        <div class="bell-row"><span class="bell-t">08:30 – 09:15</span><span class="bell-b">перерва 10 хв</span></div>
+        <div class="bell-row"><span class="bell-t">09:25 – 10:10</span><span class="bell-b">перерва 20 хв</span></div>
+        <div class="bell-row"><span class="bell-t">10:30 – 11:15</span><span class="bell-b">перерва 20 хв</span></div>
+        <div class="bell-row"><span class="bell-t">11:35 – 12:20</span><span class="bell-b">перерва 10 хв</span></div>
+        <div class="bell-row"><span class="bell-t">12:30 – 13:15</span><span class="bell-b">перерва 10 хв</span></div>
+        <div class="bell-row"><span class="bell-t">13:25 – 14:10</span><span class="bell-b">перерва 5 хв</span></div>
+        <div class="bell-row"><span class="bell-t">14:15 – 15:00</span><span class="bell-b">кінець уроків</span></div>
       </div>
     </div>
   </div>
 
-  <div id="tab-view-keys" class="panel-view">
-    <div class="bento-card-admin">
-      <div class="bento-card-title">🔑 Створити код доступу</div>
-      <div style="display:flex; gap:8px; margin-bottom:10px;">
-        <input type="text" id="new-access-code" class="bento-input" style="flex:1" placeholder="Код (до 20 симв)">
-        <button class="btn-tile" style="padding:8px 12px" onclick="genAccessCode()">🎲 Рандом</button>
-        <button class="btn-bento-action" onclick="createCode(false)">Створити</button>
-      </div>
-      <div id="access-codes-box" style="display:flex; flex-direction:column; gap:6px;">
-        <div class="empty-placeholder">Завантаження кодів...</div>
+  <div id="panel-remote" class="panel">
+    <div class="block">
+      <div class="block-title">МЕДІА</div>
+      <div class="tile-grid">
+        <button class="tile" onclick="sendAction({action: 'take_screenshot'})">📸<span>Скріншот</span></button>
+        <button class="tile" onclick="sendAction({action: 'webcam_photo'})">📷<span>Вебкамера</span></button>
       </div>
     </div>
 
-    <div class="bento-card-admin">
-      <div class="bento-card-title">👑 Коди адміністратора</div>
-      <div style="display:flex; gap:8px; margin-bottom:10px;">
-        <input type="text" id="new-admin-code" class="bento-input" style="flex:1" placeholder="Адмін код">
-        <button class="btn-tile" style="padding:8px 12px" onclick="genAdminCode()">🎲 Рандом</button>
-        <button class="btn-bento-action" style="background:#a855f7" onclick="createCode(true)">Створити</button>
-      </div>
-      <div id="admin-codes-box" style="display:flex; flex-direction:column; gap:6px;">
-        <div class="empty-placeholder">Завантаження кодів...</div>
+    <div class="block">
+      <div class="block-title">ДІЇ З ПК</div>
+      <div class="tile-grid">
+        <button class="tile warn" onclick="pcAction('shutdown', 'Вимкнути ПК зараз?')">⏻<span>Вимкнути ПК</span></button>
+        <button class="tile warn" onclick="pcAction('restart_pc', 'Перезавантажити ПК зараз?')">🔁<span>Перезавантажити</span></button>
+        <button class="tile" onclick="pcAction('sleep')">🌙<span>Сон</span></button>
+        <button class="tile" onclick="pcAction('cancel_shutdown')">🛑<span>Скасувати вимкнення</span></button>
+        <button class="tile" onclick="pcAction('empty_trash')">🗑️<span>Очистити кошик</span></button>
       </div>
     </div>
   </div>
 
-  <div class="bottom-nav">
-    <button class="nav-btn active" id="nav-schedule" onclick="switchNavTab('schedule')">
-      <span class="nav-icon">📅</span>
-      <span>Розклад</span>
+  <div id="panel-keys" class="panel">
+    <div class="block">
+      <div class="block-title">СТВОРИТИ КОД ДОСТУПУ</div>
+      <div class="row-inline" style="margin-bottom:10px">
+        <input type="text" id="new-access-code" class="field" placeholder="Код (до 20 симв)">
+        <button class="tile" style="padding:8px 12px" onclick="genAccessCode()">🎲</button>
+        <button class="btn-solid" style="width:auto; padding:0 16px" onclick="createCode(false)">Додати</button>
+      </div>
+      <div id="access-codes-box"><div class="empty-note">Завантаження кодів...</div></div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">КОДИ АДМІНІСТРАТОРА</div>
+      <div class="row-inline" style="margin-bottom:10px">
+        <input type="text" id="new-admin-code" class="field" placeholder="Адмін код">
+        <button class="tile" style="padding:8px 12px" onclick="genAdminCode()">🎲</button>
+        <button class="btn-solid alt" style="width:auto; padding:0 16px" onclick="createCode(true)">Додати</button>
+      </div>
+      <div id="admin-codes-box"><div class="empty-note">Завантаження кодів...</div></div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tab-btn active" id="nav-schedule" onclick="switchTab('schedule')">
+      <span class="tab-ico">📅</span><span>Розклад</span>
     </button>
-    <button class="nav-btn" id="nav-remote" style="display:none" onclick="switchNavTab('remote')">
-      <span class="nav-icon">💻</span>
-      <span>Пульт ПК</span>
+    <button class="tab-btn" id="nav-remote" style="display:none" onclick="switchTab('remote')">
+      <span class="tab-ico">💻</span><span>Пульт ПК</span>
     </button>
-    <button class="nav-btn" id="nav-keys" style="display:none" onclick="switchNavTab('keys')">
-      <span class="nav-icon">🔑</span>
-      <span>Ключі</span>
+    <button class="tab-btn" id="nav-keys" style="display:none" onclick="switchTab('keys')">
+      <span class="tab-ico">🔑</span><span>Ключі</span>
     </button>
   </div>
 
@@ -657,36 +549,32 @@
     let curDayIdx = new Date().getDay();
     let curDayKey = curDayIdx === 0 ? "Вс" : daysRu[curDayIdx - 1];
     let selectedDay = ["Пн", "Вт", "Ср", "Чт", "Пт"].includes(curDayKey) ? curDayKey : "Пн";
-    let keysData = { access: [], admin: [], admins: [] };
+    let keysData = { access: [], admin: [] };
 
     function haptic(type = "light") {
       try {
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        if (window.Telegram?.WebApp?.HapticFeedback) {
           window.Telegram.WebApp.HapticFeedback.impactOccurred(type);
         }
-      } catch(e) {}
+      } catch (e) {}
     }
 
     function selectDay(d) {
       haptic("light");
       selectedDay = d;
-      document.querySelectorAll(".pill-day").forEach(el => {
-        el.classList.toggle("active", el.querySelector("span").textContent.trim() === d);
+      document.querySelectorAll(".day-tab").forEach(el => {
+        el.classList.toggle("active", el.dataset.day === d);
       });
       renderList();
     }
 
-    function switchNavTab(tab) {
+    function switchTab(tab) {
       haptic("medium");
-      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".panel-view").forEach(p => p.classList.remove("active-tab"));
-
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
       document.getElementById(`nav-${tab}`).classList.add("active");
-      document.getElementById(`tab-view-${tab}`).classList.add("active-tab");
-
-      if (tab === "keys") {
-        loadKeysFromStorage();
-      }
+      document.getElementById(`panel-${tab}`).classList.add("active");
+      if (tab === "keys") loadKeysFromStorage();
     }
 
     function renderList() {
@@ -694,10 +582,10 @@
       const container = document.getElementById("lessons-list");
       const now = new Date();
       const curMins = now.getHours() * 60 + now.getMinutes();
-      const isToday = (selectedDay === curDayKey);
+      const isToday = selectedDay === curDayKey;
 
-      if (list.length === 0) {
-        container.innerHTML = '<div class="empty-placeholder">Уроків на цей день немає</div>';
+      if (!list.length) {
+        container.innerHTML = '<div class="empty-note">Уроків на цей день немає</div>';
         return;
       }
 
@@ -706,20 +594,19 @@
         const [h, m] = l.time.split(":").map(Number);
         const start = h * 60 + m;
         const end = start + 45;
-        const isCur = isToday && (curMins >= start && curMins <= end);
-        let numLabel = start < 8 * 60 + 30 ? 0 : regIdx++;
-
+        const isLive = isToday && curMins >= start && curMins <= end;
+        const numLabel = start < 8 * 60 + 30 ? 0 : regIdx++;
         return `
-          <div class="bento-lesson ${isCur ? 'current' : ''}">
-            <div class="lesson-idx-badge">${numLabel}</div>
-            <div class="lesson-info">
-              <div class="lesson-title-text">${l.name}</div>
-              <div class="lesson-meta">
-                <span class="lesson-time-code">${l.time}</span>
-                ${l.teacher ? `<span class="lesson-teacher-name">• ${l.teacher}</span>` : ''}
+          <div class="lesson-row ${isLive ? 'live' : ''}">
+            <div class="lesson-num">${numLabel}</div>
+            <div>
+              <div class="lesson-name">${l.name}</div>
+              <div class="lesson-sub">
+                <span class="t">${l.time}</span>
+                ${l.teacher ? `<span>${l.teacher}</span>` : ''}
               </div>
             </div>
-            <button class="btn-del-lesson" onclick="deleteLesson(${idx})">✕</button>
+            <button class="lesson-del" onclick="deleteLesson(${idx})">✕</button>
           </div>
         `;
       }).join("");
@@ -729,16 +616,16 @@
       const now = new Date();
       const curMins = now.getHours() * 60 + now.getMinutes();
       const todayList = schedule[curDayKey] || [];
-      const card = document.getElementById("bento-status");
-      const title = document.getElementById("st-title");
-      const desc = document.getElementById("st-desc");
-      const timer = document.getElementById("st-timer");
+      const card = document.getElementById("now-card");
+      const eyebrow = document.getElementById("now-eyebrow");
+      const what = document.getElementById("now-what");
+      const clock = document.getElementById("now-clock");
 
-      if (todayList.length === 0) {
-        card.classList.remove("active");
-        title.textContent = "Сьогодні";
-        desc.textContent = "Вихідний день";
-        timer.textContent = "00:00";
+      if (!todayList.length) {
+        card.classList.remove("live");
+        eyebrow.textContent = "Сьогодні";
+        what.textContent = "Вихідний день";
+        clock.textContent = "--:--";
         return;
       }
 
@@ -750,33 +637,33 @@
 
       const ongoing = parsed.find(l => curMins >= l.start && curMins <= l.end);
       if (ongoing) {
-        card.classList.add("active");
-        title.textContent = "Зараз іде урок";
-        desc.textContent = ongoing.name;
-        timer.textContent = `${ongoing.end - curMins} хв`;
+        card.classList.add("live");
+        eyebrow.textContent = "Зараз іде урок";
+        what.textContent = ongoing.name;
+        clock.textContent = `${ongoing.end - curMins} хв`;
         return;
       }
 
-      card.classList.remove("active");
+      card.classList.remove("live");
       const next = parsed.find(l => l.start > curMins);
       if (next) {
-        title.textContent = curMins < parsed[0].start ? "До початку" : "Перерва";
-        desc.textContent = next.name;
-        timer.textContent = `${next.start - curMins} хв`;
+        eyebrow.textContent = curMins < parsed[0].start ? "До початку" : "Перерва";
+        what.textContent = next.name;
+        clock.textContent = `${next.start - curMins} хв`;
         return;
       }
 
-      title.textContent = "Завершено";
-      desc.textContent = "Усі уроки завершено";
-      timer.textContent = "00:00";
+      eyebrow.textContent = "Завершено";
+      what.textContent = "Усі уроки на сьогодні пройшли";
+      clock.textContent = "--:--";
     }
 
     function toggleEditMode() {
       haptic("medium");
       isEditMode = !isEditMode;
-      document.body.classList.toggle("edit-mode", isEditMode);
+      document.body.classList.toggle("edit", isEditMode);
       const btn = document.getElementById("edit-btn");
-      btn.classList.toggle("active", isEditMode);
+      btn.classList.toggle("on", isEditMode);
       btn.innerHTML = isEditMode ? "💾 Готово" : "✏️ Редагувати";
       document.getElementById("undo-btn").style.display = isEditMode ? "flex" : "none";
       renderList();
@@ -822,38 +709,29 @@
 
     function toggleBells() {
       haptic("light");
-      const el = document.getElementById("bells-accordion");
+      const el = document.getElementById("bells");
       el.classList.toggle("open");
-      document.getElementById("bells-arrow").textContent = el.classList.contains("open") ? "▲" : "▼";
+      document.getElementById("bells-arrow").textContent = el.classList.contains("open") ? "▴" : "▾";
     }
 
     function syncToBot() {
       haptic("medium");
-      const tg = window.Telegram ? window.Telegram.WebApp : null;
-      if (!tg || !tg.sendData) {
-        alert("Помилка Telegram WebApp");
-        return;
-      }
+      const tg = window.Telegram?.WebApp;
+      if (!tg?.sendData) { alert("Помилка Telegram WebApp"); return; }
       tg.sendData(JSON.stringify({ action: "save_schedule", schedule }));
     }
 
     function sendAction(payload) {
       haptic("medium");
-      const tg = window.Telegram ? window.Telegram.WebApp : null;
-      if (!tg || !tg.sendData) {
-        alert("Telegram WebApp не знайдено");
-        return false;
-      }
+      const tg = window.Telegram?.WebApp;
+      if (!tg?.sendData) { alert("Telegram WebApp не знайдено"); return false; }
       tg.sendData(JSON.stringify(payload));
       return true;
     }
 
-    function execCmd() {
-      const inp = document.getElementById("admin-cmd-input");
-      const cmd = inp.value.trim();
-      if (!cmd) return;
-      sendAction({ action: "exec_cmd", command: cmd });
-      inp.value = "";
+    function pcAction(cmd, confirmMsg) {
+      if (confirmMsg && !confirm(confirmMsg)) return;
+      sendAction({ action: "pc_action", cmd });
     }
 
     function loadKeysFromStorage() {
@@ -867,26 +745,20 @@
     function renderKeys() {
       const acc = document.getElementById("access-codes-box");
       const adm = document.getElementById("admin-codes-box");
-      if (!keysData.access.length) {
-        acc.innerHTML = '<div class="empty-placeholder">Немає кодів доступу</div>';
-      } else {
-        acc.innerHTML = keysData.access.map(c => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-subtle); padding:8px 12px; border-radius:8px; border:1px solid var(--surface-border)">
-            <span style="font-family:monospace; font-weight:700">${c}</span>
-            <button class="btn-del-lesson" style="display:flex" onclick="deleteCode('${c}', false)">✕</button>
-          </div>
-        `).join("");
-      }
-      if (!keysData.admin.length) {
-        adm.innerHTML = '<div class="empty-placeholder">Немає кодів адміністратора</div>';
-      } else {
-        adm.innerHTML = keysData.admin.map(c => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-subtle); padding:8px 12px; border-radius:8px; border:1px solid rgba(168,85,247,0.3)">
-            <span style="font-family:monospace; font-weight:700; color:#c084fc">${c}</span>
-            <button class="btn-del-lesson" style="display:flex" onclick="deleteCode('${c}', true)">✕</button>
-          </div>
-        `).join("");
-      }
+      acc.innerHTML = keysData.access.length
+        ? keysData.access.map(c => `
+            <div class="code-item">
+              <span>${c}</span>
+              <button class="lesson-del" style="display:block" onclick="deleteCode('${c}', false)">✕</button>
+            </div>`).join("")
+        : '<div class="empty-note">Немає кодів доступу</div>';
+      adm.innerHTML = keysData.admin.length
+        ? keysData.admin.map(c => `
+            <div class="code-item adm">
+              <span>${c}</span>
+              <button class="lesson-del" style="display:block" onclick="deleteCode('${c}', true)">✕</button>
+            </div>`).join("")
+        : '<div class="empty-note">Немає кодів адміністратора</div>';
     }
 
     function randomCode(len) {
@@ -903,8 +775,7 @@
       const code = inp.value.trim();
       if (!code) return;
       if (sendAction({ action: "create_code", code, is_admin: isAdmin })) {
-        if (isAdmin) keysData.admin.unshift(code);
-        else keysData.access.unshift(code);
+        if (isAdmin) keysData.admin.unshift(code); else keysData.access.unshift(code);
         localStorage.setItem("keys_data", JSON.stringify(keysData));
         inp.value = "";
         renderKeys();
@@ -934,7 +805,7 @@
     updateStatus();
     setInterval(updateStatus, 30000);
 
-    if (window.Telegram && window.Telegram.WebApp) {
+    if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
     }
